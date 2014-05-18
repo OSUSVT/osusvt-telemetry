@@ -25,8 +25,8 @@ $(function () {
         },
         // the value axis
         yAxis: {
-            min: 0,
-            max: 200,
+            min: {{ minval }},
+            max: {{ maxval }},
             stops: [
                 [0.1, '#55BF3B'], // green
                 [0.5, '#DDDF0D'], // yellow
@@ -55,7 +55,7 @@ $(function () {
         },
         title: {
             floating: true,
-            text: "Speed",
+            text: "{{ charttitle }}",
             style: { "fontSize": "50px" },
             y: 50
         },
@@ -64,15 +64,15 @@ $(function () {
         },
     
         series: [{
-            name: 'Speed',
+            name: '{{ charttitle }}',
             data: [0],
             dataLabels: {
                 format: '<div style="text-align:center"><span style="font-size:50px;color:' + 
                     ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' + 
-                    '<span style="font-size:24px;color:silver">km/h</span></div>'
+                    '<span style="font-size:24px;color:silver">{{ suffix }}</span></div>'
             },
             tooltip: {
-                valueSuffix: ' km/h'
+                valueSuffix: ' {{ suffix }}'
             }
         }]
     };
@@ -82,12 +82,12 @@ $(function () {
 
     //Automatically Update the Gauge
     setInterval(function () {
-        $.getJSON( "/current/soc/", function( data ) {
+        $.getJSON( "/current/{{ data }}/", function( data ) {
             var chart = $('#content').highcharts();
             if (chart) {
                 var point = chart.series[0].points[0];
                 point.update(data[0]);
-    }});}, 500);  
+    }});}, {{ update }});  
 });
 </script>
 {% endblock %}
