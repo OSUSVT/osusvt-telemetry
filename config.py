@@ -7,5 +7,5 @@ SQLDATABASE = 'Telemetry'
 
 
 #SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://" + SQLUSERNAME + ":" + SQLPASSWORD + "@localhost/" + SQLDATABASE + "?charset=utf8&use_unicode=0"
-SQLALCHEMY_DATABASE_URI = "sqlite:////"+basedir+"app.db"
+SQLALCHEMY_DATABASE_URI = "sqlite:////"+basedir+"/app.db"
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')

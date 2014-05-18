@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+{% endblock %}
+{% block script %}
+<script>
+$(function () {
+    var gaugeOptions = {
+        chart: {
+            type: 'solidgauge'
+        },
+        pane: {
+            center: ['50%', '90%'],
+            size: '140%',
+            startAngle: -90,
+            endAngle: 90,
+            background: {
+                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                innerRadius: '60%',
+                outerRadius: '100%',
+                shape: 'arc'
+            }
+        },
+        tooltip: {
+            enabled: false
+        },
+        // the value axis
+        yAxis: {
+            min: 0,
+            max: 200,
+            stops: [
+                [0.1, '#55BF3B'], // green
+                [0.5, '#DDDF0D'], // yellow
+                [0.9, '#DF5353'] // red
+            ],
+            lineWidth: 0,
+            minorTickInterval: null,
+            tickPixelInterval: 1000,
+            tickWidth: 0,
+            labels: {
+                enabled: true,
+                style: { "fontSize": "30px" },
+                y: 30,
+                distance: -50
+
+            }        
+        },
+        plotOptions: {
+            solidgauge: {
+                dataLabels: {
+                    y: 0,
+                    borderWidth: 0,
+                    useHTML: true
+                }
+            }
+        },
+        title: {
+            floating: true,
+            text: "Speed",
+            style: { "fontSize": "50px" },
+            y: 50
+        },
+        credits: {
+            enabled: false
+        },
+    
+        series: [{
+            name: 'Speed',
+            data: [0],
+            dataLabels: {
+                format: '<div style="text-align:center"><span style="font-size:50px;color:' + 
+                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' + 
+                    '<span style="font-size:24px;color:silver">km/h</span></div>'
+            },
+            tooltip: {
+                valueSuffix: ' km/h'
+            }
+        }]
+    };
+    
+    // The speed gauge
+    $('#content').highcharts(gaugeOptions);
+
+    //Automatically Update the Gauge
+    setInterval(function () {
+        $.getJSON( "/current/soc/", function( data ) {
+            var chart = $('#content').highcharts();
+            if (chart) {
+                var point = chart.series[0].points[0];
+                point.update(data[0]);
+    }});}, 500);  
+});
+</script>
+{% endblock %}
