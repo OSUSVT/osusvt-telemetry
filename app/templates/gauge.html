@@ -82,7 +82,7 @@ $(function () {
 
     //Automatically Update the Gauge
     setInterval(function () {
-        $.getJSON( "/current/{{ data }}/", function( data ) {
+        $.getJSON( "/{{ data }}/current/", function( data ) {
             var chart = $('#content').highcharts();
             if (chart) {
                 var point = chart.series[0].points[0];

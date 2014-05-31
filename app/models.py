@@ -11,7 +11,7 @@ class telemetry(db.Model):
     mainpackvoltage = db.Column(db.Float)
     mainpackcurrent = db.Column(db.Float)
     arraycurrent = db.Column(db.Float)
-    identity = db.Column(db.Integer, primary_key = True)
+    identity = db.Column(db.Integer, primary_key=True)
     arraypower = db.Column(db.Float)
     batterypower = db.Column(db.Float)
     moterpower = db.Column(db.Float)

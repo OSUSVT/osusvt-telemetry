@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+{% endblock %}
+{% block script %}
+<script>
+    $(function() {
+
+	$.getJSON('/{{ data }}/all/', function(data) {
+		// Create the chart
+		$('#content').highcharts('StockChart', {
+
+
+			rangeSelector : {
+				selected : 1,
+				inputEnabled: $('#container').width() > 480
+			},
+
+			title : {
+				text : 'AAPL Stock Price'
+			},
+
+			series : [{
+				name : 'AAPL',
+				data : data,
+				tooltip: {
+					valueDecimals: 2
+				}
+			}]
+		});
+	});
+
+});
+
+</script>
+{% endblock %}
