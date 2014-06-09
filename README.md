@@ -12,9 +12,7 @@ cd osusvt-telemetry
 2. Insure that VirtualEnv and the Python Development Headers are Installed
 ```
 # If using yum...
-sudo yum install virtualenv python pip python-dev
-# If using a debian
-sudo apt-get install python-virtualenv python-dev
+sudo yum install python-virtualenv python python-pip python-devel gcc
 ```
 3. Make a VirtualEnv named `env`
 ```

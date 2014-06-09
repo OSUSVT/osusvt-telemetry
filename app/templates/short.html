@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+{% endblock %}
+{% block script %}
+<script>
+/**
+ * Request data from the server, add it to the graph and set a timeout 
+ * to request again
+ * http://www.highcharts.com/docs/working-with-data/preprocessing-live-data
+ */
+function requestData() {
+    $.ajax({
+        url: '/{{ data }}/prev/1200/',
+        success: function(series) {
+            chart.series[0].setData(series);
+            
+            // call it again 
+            setTimeout(requestData, {{ update }});    
+        },
+        cache: false
+    });
+}
+
+$(document).ready(function() {
+    chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'content',
+            defaultSeriesType: 'spline',
+            events: {
+                load: requestData
+            }
+        },
+        title: {
+            text: '{{ charttitle }}'
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150,
+            maxZoom: 20 * 1000
+        },
+        yAxis: {
+            minPadding: 0.2,
+            maxPadding: 0.2,
+            title: {
+                text: '{{ suffix }}',
+                margin: 80
+            }
+        },
+        series: [{
+            name: '{{ data }}',
+            data: []
+        }]
+    });        
+});
+
+
+</script>
+{% endblock %}

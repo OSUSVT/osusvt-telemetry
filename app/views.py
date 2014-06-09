@@ -68,10 +68,25 @@ def gauge(data):
 
 @app.route("/<data>/long")
 @app.route("/<data>/long/")
-def chart(data):
+def long(data):
     return render_template("long.html",
                            title="Long Chart",
-                           carname=app.config.CARNAME,
-                           orgname=app.config.ORGNAME,
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"],
+                           charttitle=app.config["ITEMPROP"][data]["title"],
+                           data=data
+                           )
+
+
+@app.route("/<data>/short")
+@app.route("/<data>/short/")
+def short(data):
+    return render_template("short.html",
+                           title="Long Chart",
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"],
+                           charttitle=app.config["ITEMPROP"][data]["title"],
                            data=data,
+                           suffix=app.config["ITEMPROP"][data]["units"],
+                           update=app.config["UPDATE"]
                            )
