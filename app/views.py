@@ -3,11 +3,43 @@ from flask import render_template, Response
 import json, time, operator
 from datetime import datetime
 
+
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template("index.html",
                            title="Welcome",
+                           attributes=app.config["ITEMPROP"],
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"]
+                           )
+
+
+@app.route('/dash')
+def dash():
+    return render_template("index.html",
+                           title="Dashboard",
+                           attributes=app.config["ITEMPROP"],
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"]
+                           )
+
+
+@app.route('/raw')
+def raw():
+    return render_template("index.html",
+                           title="Raw",
+                           attributes=app.config["ITEMPROP"],
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"]
+                           )
+
+
+@app.route('/map')
+def map():
+    return render_template("index.html",
+                           title="Map",
+                           attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"]
                            )
@@ -54,6 +86,7 @@ def prev_data(data, num):
 @app.route('/<data>/gauge/')
 def gauge(data):
     return render_template("gauge.html",
+                           attributes=app.config["ITEMPROP"],
                            title="Gauge - {0}".format(app.config["ITEMPROP"][data]["title"]),
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
@@ -70,6 +103,7 @@ def gauge(data):
 @app.route("/<data>/long/")
 def long(data):
     return render_template("long.html",
+                           attributes=app.config["ITEMPROP"],
                            title="Long Chart",
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
@@ -82,6 +116,7 @@ def long(data):
 @app.route("/<data>/short/")
 def short(data):
     return render_template("short.html",
+                           attributes=app.config["ITEMPROP"],
                            title="Long Chart",
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
@@ -90,3 +125,24 @@ def short(data):
                            suffix=app.config["ITEMPROP"][data]["units"],
                            update=app.config["UPDATE"]
                            )
+
+
+@app.route('/mysql/soft')
+def mysql_soft():
+    return render_template("index.html",
+                           title="MySQL Soft Reset",
+                           attributes=app.config["ITEMPROP"],
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"]
+                           )
+
+
+@app.route('/mysql/hard')
+def mysql_hard():
+    return render_template("index.html",
+                           title="MySQL Hard Reset",
+                           attributes=app.config["ITEMPROP"],
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"]
+                           )
+

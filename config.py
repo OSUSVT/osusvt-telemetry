@@ -20,7 +20,7 @@ UPDATE = 5000
 
 ITEMPROP = dict({
     "mainpacksoc": {
-        "title": "State of Charge (Main Pack)",
+        "title": "Main Pack State of Charge",
         "minval": 0,
         "maxval": 100,
         "units": "units"
