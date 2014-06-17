@@ -12,7 +12,7 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 
 ORGNAME = "OSU Solar Vehicle Team"
-CARNAME = "Pheonix"
+CARNAME = "Phoenix"
 
 
 UPDATE = 5000
