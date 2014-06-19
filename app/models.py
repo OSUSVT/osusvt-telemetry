@@ -1,17 +1,27 @@
-from app import db
+from app import app
+from sqlalchemy import Column, Integer
+from sqlalchemy import create_engine, Column, Integer
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.hybrid import hybrid_property
 
-class telemetry(db.Model):
-    index = db.Column(db.Float)
-    datetime = db.Column(db.String(64))
-    latitude = db.Column(db.Float)
-    longitude = db.Column(db.Float)
-    elevation = db.Column(db.Float)
-    velocity = db.Column(db.Float)
-    mainpacksoc = db.Column(db.Float)
-    mainpackvoltage = db.Column(db.Float)
-    mainpackcurrent = db.Column(db.Float)
-    arraycurrent = db.Column(db.Float)
-    identity = db.Column(db.Integer, primary_key=True)
-    arraypower = db.Column(db.Float)
-    batterypower = db.Column(db.Float)
-    moterpower = db.Column(db.Float)
+engine = create_engine(app.config["CONNECT"])
+Base = declarative_base(engine)
+
+class Telemetry(Base):
+    __tablename__ = 'telemetry'
+    __table_args__ = {'autoload':True}
+    Index = Column(Integer, primary_key=True)
+    """This is How You Can Define Calculated Fields that are not in the Database"""
+    ''' 
+    @hybrid_property
+    def mycalc(self):
+	return float(self.__getattribute__("MainPackVoltage")) + float(self.__getattribute__("MainPackSOC"))
+    ''' 
+
+def loadSession():
+    metadata = Base.metadata
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
+
