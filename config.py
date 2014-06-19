@@ -1,15 +1,6 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLUSERNAME = 'osusvtremote'
-SQLPASSWORD = 'Phenix'
-SQLDATABASE = 'Telemetry'
-
-
-#SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://" + SQLUSERNAME + ":" + SQLPASSWORD + "@localhost/" + SQLDATABASE + "?charset=utf8&use_unicode=0"
-SQLALCHEMY_DATABASE_URI = "sqlite:////"+basedir+"/app.db"
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
-
+CONNECT = 'mysql+mysqldb://OSUSVT:ManBearPig@localhost/solarcar'
 
 ORGNAME = "OSU Solar Vehicle Team"
 CARNAME = "Phoenix"
@@ -17,58 +8,62 @@ CARNAME = "Phoenix"
 
 UPDATE = 5000
 
-
+"""
++-----------------+------------+------+-----+---------+-------+
+| Field           | Type       | Null | Key | Default | Extra |
++-----------------+------------+------+-----+---------+-------+
+| Index           | mediumtext | YES  |     | NULL    |       |
+| DateTime        | text       | YES  |     | NULL    |       |
+| Latitude        | text       | YES  |     | NULL    |       |
+| Longitude       | text       | YES  |     | NULL    |       |
+| Elevation       | text       | YES  |     | NULL    |       |
+| Velocity        | text       | YES  |     | NULL    |       |
+| MainPackSOC     | text       | YES  |     | NULL    |       |
+| MainPackVoltage | text       | YES  |     | NULL    |       |
+| MainPackCurrent | text       | YES  |     | NULL    |       |
+| ArrayCurrent    | text       | YES  |     | NULL    |       |
+| AuxPackVoltage  | text       | YES  |     | NULL    |       |
++-----------------+------------+------+-----+---------+-------+
+"""
 ITEMPROP = dict({
-    "elevation": {
+    "Elevation": {
         "title": "Elevation",
         "minval": 0,
         "maxval": 1000,
         "units": "units"
     },
-    "velocity": {
+    "Velocity": {
         "title": "Velocity",
         "minval": 0,
         "maxval": 100,
         "units": "units"
     },
-    "mainpacksoc": {
+    "MainPackSOC": {
         "title": "Main Pack State of Charge",
         "minval": 0,
         "maxval": 100,
         "units": "units"
     },
-    "mainpackcurrent": {
+    "MainPackCurrent": {
         "title": "Main Pack Current",
         "minval": 0,
         "maxval": 100,
         "units": "units"
     },
-    "mainpackvoltage": {
+    "MainPackVoltage": {
         "title": "Main Pack Voltage",
         "minval": 0,
         "maxval": 200,
         "units": "units"
     },
-    "arraycurrent": {
+    "ArrayCurrent": {
         "title": "Array Current",
         "minval": 0,
         "maxval": 200,
         "units": "units"
     },
-    "arraypower": {
-        "title": "Array Power",
-        "minval": 0,
-        "maxval": 2000,
-        "units": "units"
-    },
-    "batterypower": {
-        "title": "Battery Power",
-        "minval": 0,
-        "maxval": 200,
-        "units": "units"
-    },
-    "moterpower": {
-        "title": "Motor Power",
+    "AuxPackVoltage": {
+        "title": "Auxilury Pack Voltage",
         "minval": 0,
         "maxval": 2000,
         "units": "units"

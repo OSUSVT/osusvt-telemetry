@@ -1,4 +1,4 @@
-from app import app, db, models
+from app import app, session, Telemetry
 from flask import render_template, Response
 import json, time, operator
 from datetime import datetime
@@ -48,21 +48,21 @@ def map():
 @app.route("/<data>/current")
 @app.route("/<data>/current/")
 def current_data(data):
-    query = models.telemetry.query.order_by(models.telemetry.identity.desc()).first()
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).first()
     # This is bad codding find a different way...
-    value = [query.__dict__.get(data)]
+    value = [float(query.__getattribute__(data))]
     return Response(json.dumps(value), mimetype='application/json')
 
 
 @app.route("/<data>/all")
 @app.route("/<data>/all/")
 def all_data(data):
-    query = models.telemetry.query.order_by(models.telemetry.identity.desc()).all()
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).all()
     values = []
     for value in query:
         values.append((int(time.mktime(
-            datetime.strptime(value.datetime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(
-            value.datetime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000, value.__dict__.get(data)))
+            datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(
+            value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000, float(value.__getattribute__(data))))
     #values.sort(reverse=True)
     values.reverse()
     return Response(json.dumps(values), mimetype='application/json')
@@ -71,12 +71,12 @@ def all_data(data):
 @app.route('/<data>/prev/<num>')
 @app.route('/<data>/prev/<num>/')
 def prev_data(data, num):
-    query = models.telemetry.query.order_by(models.telemetry.identity.desc()).limit(num)
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
     values = []
     for value in query:
         values.append((int(time.mktime(
-            datetime.strptime(value.datetime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(
-            value.datetime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000, value.__dict__.get(data)))
+            datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(
+            value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000, float(value.__getattribute__(data))))
     #values.sort(reverse=True)
     values.reverse()
     return Response(json.dumps(values), mimetype='application/json')
