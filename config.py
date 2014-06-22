@@ -26,6 +26,12 @@ UPDATE = 5000
 +-----------------+------------+------+-----+---------+-------+
 """
 ITEMPROP = dict({
+    "Efficiency": {
+        "title": "Approximate Efficiency",
+        "minval": -1000,
+        "maxval": 1000,
+        "units": "units"
+    },
     "Elevation": {
         "title": "Elevation",
         "minval": 0,

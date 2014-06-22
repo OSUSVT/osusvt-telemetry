@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <h1> Efficiency </h1>
+    <div class="col-md-2"><h1 id="current-efficiency" class="bigcurrent"></h1></div>
+    <div id="graph-efficiency" class="col-md-10"></div>
+</div>
+<div class="row">
+    <h1> SOC </h1>
+    <div class="col-md-2"><h1 id="current-soc" class="bigcurrent"></h1></div>
+    <div id="graph-soc" class="col-md-10"></div>
+</div>
+<div class="row">
+    <h1> Array Output </h1>
+    <div class="col-md-2"><h1 id="current-arraycurrent" class="bigcurrent"></h1></div>
+    <div id="graph-arraycurrent" class="col-md-10"></div>
+</div>
+<div class="row">
+    <h1> Main Pack Output </h1>
+    <div class="col-md-2"><h1 id="current-mainpackcurrent" class="bigcurrent"></h1></div>
+    <div id="graph-mainpackcurrent" class="col-md-10"></div>
+</div>
+<div class="row">
+    <h1> Aux Pack Voltage </h1>
+    <div class="col-md-2"><h1 id="current-auxvoltage" class="bigcurrent"></h1></div>
+    <div id="graph-auxvoltage" class="col-md-10"></div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+/**
+ * Request data from the server, add it to the graph and set a timeout 
+ * to request again
+ * http://www.highcharts.com/docs/working-with-data/preprocessing-live-data
+ */
+function requestData() {
+    $.ajax({
+        url: '/dash/data/',
+        success: function(values) {
+            for (attr in values) {
+                jQuery("#" + attr).text(values[attr]);
+            }
+            // call it again 
+            setTimeout(requestData, {{ update }});    
+        },
+        cache: false
+    });
+}
+$(document).ready(function() {
+    chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'graph-efficiency',
+            defaultSeriesType: 'spline'
+        },
+	title: {
+	    text: ''
+	},
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150,
+            maxZoom: 20 * 1000
+        },
+        yAxis: {
+            minPadding: 0.2,
+            maxPadding: 0.2,
+	    title: {
+	        text: ''
+	    }
+        },
+        series: [{
+	    showInLegend: false,
+            data: []
+        }]
+    });        
+	
+    requestData();
+});
+</script>
+{% endblock %}

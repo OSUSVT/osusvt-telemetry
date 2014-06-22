@@ -6,23 +6,29 @@ from datetime import datetime
 
 @app.route('/')
 @app.route('/index')
-def index():
-    return render_template("index.html",
-                           title="Welcome",
-                           attributes=app.config["ITEMPROP"],
-                           carname=app.config["CARNAME"],
-                           orgname=app.config["ORGNAME"]
-                           )
-
-
 @app.route('/dash')
+@app.route('/dash/')
 def dash():
-    return render_template("index.html",
+    return render_template("dash.html",
                            title="Dashboard",
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
-                           orgname=app.config["ORGNAME"]
+                           orgname=app.config["ORGNAME"],
+                           update=app.config["UPDATE"]
                            )
+
+
+@app.route('/dash/data/')
+def dash_data():
+    values = dict()
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).first()
+    values["current-efficiency"] = [round(float(query.Efficiency), 2)]
+    values["current-soc"] = [round(float(query.MainPackSOC), 2)]
+    values["current-arraycurrent"] = [round(float(query.ArrayCurrent), 2)]
+    values["current-mainpackcurrent"] = [round(float(query.MainPackCurrent), 2)]
+    values["current-auxvoltage"] = [round(float(query.AuxPackVoltage), 2)]
+    return Response(json.dumps(values), mimetype='application/json')
+
 
 
 @app.route('/raw')
@@ -49,7 +55,6 @@ def map():
 @app.route("/<data>/current/")
 def current_data(data):
     query = session.query(Telemetry).order_by(Telemetry.Index.desc()).first()
-    # This is bad codding find a different way...
     value = [float(query.__getattribute__(data))]
     return Response(json.dumps(value), mimetype='application/json')
 

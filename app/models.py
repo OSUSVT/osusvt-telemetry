@@ -13,11 +13,9 @@ class Telemetry(Base):
     __table_args__ = {'autoload':True}
     Index = Column(Integer, primary_key=True)
     """This is How You Can Define Calculated Fields that are not in the Database"""
-    ''' 
     @hybrid_property
-    def mycalc(self):
-	return float(self.__getattribute__("MainPackVoltage")) + float(self.__getattribute__("MainPackSOC"))
-    ''' 
+    def Efficiency(self):
+	return float(self.__getattribute__("ArrayCurrent")) - float(self.__getattribute__("MainPackCurrent"))
 
 def loadSession():
     metadata = Base.metadata
