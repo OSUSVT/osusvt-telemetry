@@ -27,11 +27,12 @@ def dash():
 
 @app.route('/raw')
 def raw():
-    return render_template("index.html",
+    return render_template("raw.html",
                            title="Raw",
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
-                           orgname=app.config["ORGNAME"]
+                           orgname=app.config["ORGNAME"],
+                           update=app.config["UPDATE"]
                            )
 
 
@@ -43,6 +44,14 @@ def map():
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"]
                            )
+
+
+@app.route("/all/current/")
+def current():
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).first()
+    value = dict(query.__dict__)
+    del value['_sa_instance_state']
+    return Response(json.dumps(value), mimetype='application/json')
 
 
 @app.route("/<data>/current")
@@ -60,9 +69,12 @@ def all_data(data):
     query = session.query(Telemetry).order_by(Telemetry.Index.desc()).all()
     values = []
     for value in query:
-        values.append((int(time.mktime(
-            datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(
-            value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000, float(value.__getattribute__(data))))
+        #This Long Incantation Converts our string of data into Unix Time time 1000
+        epoctime = int(time.mktime(datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000
+        datavalue = value.__getattribute__(data)
+        if not datavalue is None:
+            datavalue = float(datavalue)
+        values.append((epoctime, datavalue))
     #values.sort(reverse=True)
     values.reverse()
     return Response(json.dumps(values), mimetype='application/json')
@@ -74,9 +86,12 @@ def prev_data(data, num):
     query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
     values = []
     for value in query:
-        values.append((int(time.mktime(
-            datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(
-            value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000, float(value.__getattribute__(data))))
+        #This Long Incantation Converts our string of data into Unix Time time 1000
+        epoctime = int(time.mktime(datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000
+        datavalue = value.__getattribute__(data)
+        if not datavalue is None:
+            datavalue = float(datavalue)
+        values.append((epoctime, datavalue))
     #values.sort(reverse=True)
     values.reverse()
     return Response(json.dumps(values), mimetype='application/json')
