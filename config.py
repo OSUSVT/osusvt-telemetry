@@ -6,7 +6,7 @@ ORGNAME = "OSU Solar Vehicle Team"
 CARNAME = "Phoenix"
 
 
-UPDATE = 5000
+UPDATE = 250
 
 """
 +-----------------+------------+------+-----+---------+-------+
