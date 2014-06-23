@@ -9,9 +9,10 @@ from datetime import datetime
 @app.route('/dash')
 @app.route('/dash/')
 def dash():
+	items = app.config["DASH"]
     return render_template("dash.html",
                            title="Dashboard",
-                           properties=app.config["ITEMPROP"],
+						   items=items,
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
@@ -21,13 +22,20 @@ def dash():
 
 @app.route('/dash/data/')
 def dash_data():
+	num = 1200
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
+	items = app.config["DASH"]
     values = dict()
-    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).first()
-    values["current-efficiency"] = [round(float(query.Efficiency), 2)]
-    values["current-soc"] = [round(float(query.MainPackSOC), 2)]
-    values["current-arraycurrent"] = [round(float(query.ArrayCurrent), 2)]
-    values["current-mainpackcurrent"] = [round(float(query.MainPackCurrent), 2)]
-    values["current-auxvoltage"] = [round(float(query.AuxPackVoltage), 2)]
+	for item in items:
+		values["current-" + item] = [round(float(query[0].__getattribute__(item)), 2)]
+		values["graph-" + item] = [] //We will fill it latter
+	for value in query:
+		epoctime = int(time.mktime(datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000
+		for item in items:
+			itemvalue = value.__getattribute__(item)
+			if not itemvalue is None:
+				itemvalue = float(itemvalue)
+			values["graph-" + item] += [epoctime, itemvalue]
     return Response(json.dumps(values), mimetype='application/json')
 
 

@@ -8,6 +8,8 @@ CARNAME = "Phoenix"
 
 UPDATE = 250
 
+DASH = ["Efficiency", "MainPackSOC", "ArrayCurrent", "MainPackCurrent", "AuxPackVoltage"]
+
 """
 +-----------------+------------+------+-----+---------+-------+
 | Field           | Type       | Null | Key | Default | Extra |
