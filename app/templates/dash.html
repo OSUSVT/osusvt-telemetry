@@ -1,29 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-    <h1> Efficiency </h1>
-    <div class="col-md-2"><h1 id="current-efficiency" class="bigcurrent"></h1></div>
-    <div id="graph-efficiency" class="col-md-10"></div>
-</div>
-<div class="row">
-    <h1> SOC </h1>
-    <div class="col-md-2"><h1 id="current-soc" class="bigcurrent"></h1></div>
-    <div id="graph-soc" class="col-md-10"></div>
-</div>
-<div class="row">
-    <h1> Array Output </h1>
-    <div class="col-md-2"><h1 id="current-arraycurrent" class="bigcurrent"></h1></div>
-    <div id="graph-arraycurrent" class="col-md-10"></div>
-</div>
-<div class="row">
-    <h1> Main Pack Output </h1>
-    <div class="col-md-2"><h1 id="current-mainpackcurrent" class="bigcurrent"></h1></div>
-    <div id="graph-mainpackcurrent" class="col-md-10"></div>
-</div>
-<div class="row">
-    <h1> Aux Pack Voltage </h1>
-    <div class="col-md-2"><h1 id="current-auxvoltage" class="bigcurrent"></h1></div>
-    <div id="graph-auxvoltage" class="col-md-10"></div>
+<div class="dashboard">
+    <div class="row">
+        <h1> Efficiency </h1>
+        <div class="col-md-2"><h1 id="current-efficiency" class="current"></h1></div>
+        <div id="graph-efficiency" class="graph col-md-10"></div>
+    </div>
+    <div class="row">
+        <h1> SOC </h1>
+        <div class="col-md-2"><h1 id="current-soc" class="current"></h1></div>
+        <div id="graph-soc" class="graph col-md-10"></div>
+    </div>
+    <div class="row">
+        <h1> Array Output </h1>
+        <div class="col-md-2"><h1 id="current-arraycurrent" class="current"></h1></div>
+        <div id="graph-arraycurrent" class="graph col-md-10"></div>
+    </div>
+    <div class="row">
+        <h1> Main Pack Output </h1>
+        <div class="col-md-2"><h1 id="current-mainpackcurrent" class="current"></h1></div>
+        <div id="graph-mainpackcurrent" class="graph col-md-10"></div>
+    </div>
+    <div class="row">
+        <h1> Aux Pack Voltage </h1>
+        <div class="col-md-2"><h1 id="current-auxvoltage" class="current"></h1></div>
+        <div id="graph-auxvoltage" class="graph col-md-10"></div>
+    </div>
 </div>
 {% endblock %}
 {% block script %}
@@ -40,16 +42,60 @@ function requestData() {
             for (attr in values) {
                 jQuery("#" + attr).text(values[attr]);
             }
-            // call it again 
-            setTimeout(requestData, {{ update }});    
         },
         cache: false
     });
+    // Efficiency
+    $.ajax({
+        url: '/Efficiency/prev/1200/',
+        success: function(values) {
+            var chart = $('#graph-efficiency').highcharts();
+            chart.series[0].setData(values)
+        },
+        cache: false
+    });
+    // State of Charge
+    $.ajax({
+        url: '/MainPackSOC/prev/1200/',
+        success: function(values) {
+            var chart = $('#graph-soc').highcharts();
+            chart.series[0].setData(values)
+        },
+        cache: false
+    });
+    // Array Output
+    $.ajax({
+        url: '/ArrayCurrent/prev/1200/',
+        success: function(values) {
+            var chart = $('#graph-arraycurrent').highcharts();
+            chart.series[0].setData(values)
+        },
+        cache: false
+    });
+    // Main Pack Output
+    $.ajax({
+        url: '/MainPackCurrent/prev/1200/',
+        success: function(values) {
+            var chart = $('#graph-mainpackcurrent').highcharts();
+            chart.series[0].setData(values)
+        },
+        cache: false
+    });
+    // Aux Pack Voltage
+    $.ajax({
+        url: '/AuxPackVoltage/prev/1200/',
+        success: function(values) {
+            var chart = $('#graph-auxvoltage').highcharts();
+            chart.series[0].setData(values)
+        },
+        cache: false
+    });
+    // call it again
+    setTimeout(requestData, {{ update }});
 }
 $(document).ready(function() {
-    chart = new Highcharts.Chart({
+    blankchart = {
         chart: {
-            renderTo: 'graph-efficiency',
             defaultSeriesType: 'spline'
         },
 	title: {
@@ -71,8 +117,12 @@ $(document).ready(function() {
 	    showInLegend: false,
             data: []
         }]
-    });        
-	
+    };
+    $('#graph-efficiency').highcharts(blankchart);
+	$('#graph-soc').highcharts(blankchart);
+	$('#graph-arraycurrent').highcharts(blankchart);
+	$('#graph-mainpackcurrent').highcharts(blankchart);
+	$('#graph-auxvoltage').highcharts(blankchart);
     requestData();
 });
 </script>

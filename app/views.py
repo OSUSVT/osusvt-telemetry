@@ -11,6 +11,7 @@ from datetime import datetime
 def dash():
     return render_template("dash.html",
                            title="Dashboard",
+                           properties=app.config["ITEMPROP"],
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
