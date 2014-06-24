@@ -4,8 +4,8 @@
 	{% for item in items %}
     <div class="row">
         <h1>{{ attributes[item]["title"] }}</h1>
-        <div class="col-md-2"><h1 id="current-{{ item }}" class="current"></h1></div>
-        <div id="graph-{{ item }}" class="graph col-md-10"></div>
+        <div class="col-md-2"><h1 id="current-{{ item.lower() }}" class="current"></h1></div>
+        <div id="graph-{{ item.lower() }}" class="graph col-md-10"></div>
     </div>
 	{% endfor %}
 </div>
@@ -17,21 +17,25 @@
  * to request again
  * http://www.highcharts.com/docs/working-with-data/preprocessing-live-data
  */
+items = [];
+{% for item in items %}
+items.push("{{ item.lower() }}");
+{% endfor %}
 function requestData() {
     $.ajax({
         url: '/dash/data/',
         success: function(values) {
             for (item in items) {
-                jQuery("#current-" + item).text(values["current-" + item]);
-				var chart = $('#graph-' + item).highcharts();
-				chart.series[0].setData(values["graph-" + item);
-            }
+                jQuery("#current-" + items[item]).text(values["current-" + items[item]]);
+		var chart = $('#graph-' + items[item]).highcharts();
+		chart.series[0].setData(values["graph-" + items[item]]);
+	    }
         },
         cache: false
     });
     // call it again
     setTimeout(requestData, {{ update }});
-}
+};
 $(document).ready(function() {
     blankchart = {
         chart: {
@@ -57,9 +61,8 @@ $(document).ready(function() {
             data: []
         }]
     };
-	items = {{ items }};
 	for (item in items) {
-		$('#graph-' + item).highcharts(blankchart);
+		$('#graph-' + items[item]).highcharts(blankchart);
 	}
     requestData();
 });

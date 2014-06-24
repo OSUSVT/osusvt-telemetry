@@ -9,10 +9,10 @@ from datetime import datetime
 @app.route('/dash')
 @app.route('/dash/')
 def dash():
-	items = app.config["DASH"]
+    items = app.config["DASH"]
     return render_template("dash.html",
                            title="Dashboard",
-						   items=items,
+			   items=items,
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
@@ -23,20 +23,20 @@ def dash():
 @app.route('/dash/data/')
 def dash_data():
 	num = 1200
-    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
+	query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
 	items = app.config["DASH"]
-    values = dict()
+	values = dict()
 	for item in items:
-		values["current-" + item] = [round(float(query[0].__getattribute__(item)), 2)]
-		values["graph-" + item] = [] //We will fill it latter
+		values["current-" + item.lower()] = [round(float(query[0].__getattribute__(item)), 2)]
+		values["graph-" + item.lower()] = [] #We will fill it latter
 	for value in query:
 		epoctime = int(time.mktime(datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').timetuple()) + 1e-6 * datetime.strptime(value.DateTime, '%m/%d/%Y %H:%M:%S %p').microsecond) * 1000
 		for item in items:
 			itemvalue = value.__getattribute__(item)
 			if not itemvalue is None:
 				itemvalue = float(itemvalue)
-			values["graph-" + item] += [epoctime, itemvalue]
-    return Response(json.dumps(values), mimetype='application/json')
+			values["graph-" + item.lower()].append((epoctime, itemvalue))
+	return Response(json.dumps(values), mimetype='application/json')
 
 
 
