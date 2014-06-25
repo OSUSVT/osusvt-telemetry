@@ -19,7 +19,7 @@ class Telemetry(Base):
 
 def loadSession():
     metadata = Base.metadata
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine, autoflush=True, autocommit=True) 
     session = Session()
     return session
 

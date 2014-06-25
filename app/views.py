@@ -16,14 +16,14 @@ def dash():
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"],
-                           update=app.config["UPDATE"]
+                           update=app.config["UPDATE"]*4
                            )
 
 
 @app.route('/dash/data/')
 def dash_data():
 	num = 1200
-	query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
+	query = session.query(Telemetry).order_by(Telemetry.Index).limit(num)
 	items = app.config["DASH"]
 	values = dict()
 	for item in items:
@@ -80,7 +80,7 @@ def current_data(data):
 @app.route("/<data>/all")
 @app.route("/<data>/all/")
 def all_data(data):
-    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).all()
+    query = session.query(Telemetry).order_by(Telemetry.Index).all()
     values = []
     for value in query:
         #This Long Incantation Converts our string of data into Unix Time time 1000
@@ -89,15 +89,13 @@ def all_data(data):
         if not datavalue is None:
             datavalue = float(datavalue)
         values.append((epoctime, datavalue))
-    #values.sort(reverse=True)
-    values.reverse()
     return Response(json.dumps(values), mimetype='application/json')
 
 
 @app.route('/<data>/prev/<num>')
 @app.route('/<data>/prev/<num>/')
 def prev_data(data, num):
-    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).limit(num)
+    query = session.query(Telemetry).order_by(Telemetry.Index).limit(num)
     values = []
     for value in query:
         #This Long Incantation Converts our string of data into Unix Time time 1000
@@ -106,8 +104,6 @@ def prev_data(data, num):
         if not datavalue is None:
             datavalue = float(datavalue)
         values.append((epoctime, datavalue))
-    #values.sort(reverse=True)
-    values.reverse()
     return Response(json.dumps(values), mimetype='application/json')
 
 
