@@ -2,6 +2,7 @@ from app import app, session, Telemetry
 from flask import render_template, Response
 import json, time, operator
 from datetime import datetime
+import subprocess
 
 
 @app.route('/')
@@ -154,8 +155,16 @@ def short(data):
 
 @app.route('/mysql/soft')
 def mysql_soft():
-    return render_template("index.html",
-                           title="MySQL Soft Reset",
+    if subprocess.call("mysql -uroot -pOSUSVT -e 'STOP SLAVE IO_THREAD; START SLAVE IO_THREAD;' solarcar", shell=True):
+        return render_template("index.html",
+                           title="Reset Failed",
+                           attributes=app.config["ITEMPROP"],
+                           carname=app.config["CARNAME"],
+                           orgname=app.config["ORGNAME"]
+                           )
+    else:
+        return render_template("index.html",
+                           title="Reset Complete",
                            attributes=app.config["ITEMPROP"],
                            carname=app.config["CARNAME"],
                            orgname=app.config["ORGNAME"]
