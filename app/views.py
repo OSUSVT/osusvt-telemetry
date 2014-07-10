@@ -171,3 +171,10 @@ def mysql_hard():
                            orgname=app.config["ORGNAME"]
                            )
 
+@app.route("/export.csv")
+def export():
+    query = session.query(Telemetry).order_by(Telemetry.Index.desc()).all()
+    values = dict(query[0].__dict__)
+    del values['_sa_instance_state']
+    render = render_template("export.csv", query=query, values=values)
+    return Response(render, mimetype='text/csv')

@@ -1,0 +1,3 @@
+{% for value in values %}{{ value }},{% endfor %}
+{% for item in query %}{% for value in values %}{{ item.__getattribute__(value) }},{% endfor %}
+{% endfor %}
