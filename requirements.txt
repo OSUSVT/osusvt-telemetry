@@ -1,6 +1,3 @@
 flask
 sqlalchemy
-flask-wtf
-flask-sqlalchemy
 mysql-python
-sqlalchemy-migrate
