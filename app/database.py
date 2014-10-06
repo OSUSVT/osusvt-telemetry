@@ -20,6 +20,7 @@ telemetry = sqlalchemy.Table('telemetry', metadata,
 				sqlalchemy.Column('auxpackvoltage', types.Numeric(precision=10, scale=4), nullable=False)
 			)
 metadata.create_all(engine) #Create Database if it doesn't exist
+orderby = telemetry.c.epochtime
 
 
 @app.timeit
@@ -34,23 +35,23 @@ def storeresult(result):
 
 @app.timeit
 def selectall(selection=[telemetry]):
-	s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id)
+	s = sqlalchemy.sql.select(selection).order_by(orderby)
 	return storeresult(engine.execute(s))
 	
 	
 @app.timeit
 def selectlast(num, selection=[telemetry]):
-	s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id).limit(num)
+	s = sqlalchemy.sql.select(selection).order_by(orderby).limit(num)
 	return storeresult(engine.execute(s))
 
 
 @app.timeit	
 def selectevery(num, min=1, max=None, selection=[telemetry]):
-	"""If Min is specified max should be also"""
+	"""Min and max refer to epoch time. If Min is specified max should be also"""
 	if max:
-		s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id).where(telemetry.c.epochtime >= min).where((telemetry.c.id - 1) % num == 0).where(telemetry.c.epochtime <= max)
+		s = sqlalchemy.sql.select(selection).order_by(orderby).where(telemetry.c.epochtime >= min).where((telemetry.c.id - 1) % num == 0).where(telemetry.c.epochtime <= max)
 	else:
-		s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id).where((telemetry.c.id - 1) % num == 0)
+		s = sqlalchemy.sql.select(selection).order_by(orderby).where((telemetry.c.id - 1) % num == 0)
 	return storeresult(engine.execute(s))
 	
 
@@ -60,11 +61,13 @@ def countrows():
 	result = engine.execute(s).fetchall()[0][0]
 	return result
 
+	
 @app.timeit
 def minid():
 	s = sqlalchemy.sql.select([sqlalchemy.func.min(telemetry.c.id)])
 	result = engine.execute(s).fetchall()[0][0]
 	return result
+	
 	
 @app.timeit
 def maxid():
@@ -72,12 +75,27 @@ def maxid():
 	result = engine.execute(s).fetchall()[0][0]
 	return result
 
+
+@app.timeit
+def minepoch():
+	s = sqlalchemy.sql.select([sqlalchemy.func.min(telemetry.c.epochtime)])
+	result = engine.execute(s).fetchall()[0][0]
+	return result
+	
 	
 @app.timeit
+def maxepoch():
+	s = sqlalchemy.sql.select([sqlalchemy.func.max(telemetry.c.epochtime)])
+	result = engine.execute(s).fetchall()[0][0]
+	return result
+
+		
+@app.timeit
 def selectdist(num, min=1, max=None, selection=[telemetry]):
-	"""If Min is specified Max should be also"""
+	"""Min and max refer to epoch time. If Min is specified Max should be also"""
 	if max:
-		countnum = max - min
+		s = sqlalchemy.sql.select([sqlalchemy.func.count(telemetry.c.id)]).where((telemetry.c.id - 1) % num == 0).where(telemetry.c.epochtime <= max)
+		countnum = engine.execute(s).fetchall()[0][0]
 	else:
 		countnum = countrows()
 	if num > countnum:
