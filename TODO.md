@@ -25,4 +25,7 @@ ns.current = dictionary of the most current values in the database for
 sd.database.insert(0, (121351, 13216351, 1213151) )
 speciallizedarray = [row[0], row[rownum]] for row in ns.database
 ```
+##Figure out how to to asyncronous loading in highcharts
+##Raw Page Update Clickable Links
+##Create Warning Page For export.csv
 ##Kill all Humans!!

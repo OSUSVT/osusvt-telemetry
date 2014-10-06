@@ -1,22 +1,85 @@
 from app import app
+from app.variables import variables
+import flask
+import app.database as database
+import simplejson #pip install simplejson #simplejson has beter decimal support than the standard json library
+
+def template(name, **kwargs):
+	return flask.render_template(name, variables=variables, displayvars=sorted(variables.keys()), **kwargs)
+
+	
+def encode(values):
+	return flask.Response(simplejson.dumps(values, use_decimal=True, #If use_decimal is not used the encoder will use "strings"
+						  sort_keys = True, indent = 4, ensure_ascii=False), mimetype='application/json') #Makes the json returned easily readable
+'''
+Data
+'''
+@app.route("/<data>/current")
+def current_data(data):
+	value = database.selectlast(1, #Only want one value (LIMIT 1)
+								selection=[variables[data].data] #SELECT data from the columns specified
+								)[0] #Function returns an Array with one value so we have to enter it
+	return encode(value)
+
+	
+@app.route("/<data>/number")
+def number(data):
+	return template("number.html", title="Number Display of {data}".format(data=variables[data].display), var=data)
+
+	
+@app.route("/<data>/number/data")
+def number_data(data):
+	value = database.selectlast(1, selection=[variables[data].data])[0]
+	return encode(value)
+	
+	
+@app.route("/<data>/short")
+def short(data):
+	return template("short.html", title="Short Graph of {data}".format(data=variables[data].display), var=data)
+
+	
+@app.route("/<data>/short/data")
+def short_data(data):
+	value = database.selectlast(1800, selection=[database.telemetry.c.epochtime, variables[data].data])
+	return encode(value)
+	
+
+@app.route("/<data>/long")
+def long(data):
+	return
+
+
+@app.route("/<data>/gauge")
+def gauge(data):
+	return template("gauge.html", title="Gauge of {data}".format(data=variables[data].display), var=data)
+
+	
+@app.route("/<data>/gauge/data")
+def gauge_data(data):
+	value = database.selectlast(1, selection=[variables[data].data])[0]
+	return encode(value)
+	
+
+'''
+End of Data Section
+'''
 
 
 @app.route('/')
 @app.route('/index')
 @app.route('/dash')
-@app.route('/dash/')
 def dash():
-	return
+	return template("base.html", title="Dash")
 
 
-@app.route('/dash/data/')
+@app.route('/dash/data')
 def dash_data():
 	return
 
 
 @app.route('/raw')
 def raw():
-	return
+	return template("raw.html", title="Raw")
 
 
 @app.route('/map')
@@ -24,57 +87,17 @@ def map():
 	return
 
 
-@app.route("/all/current/")
-def current():
-	return
-
-
-@app.route("/<data>/current")
-@app.route("/<data>/current/")
-def current_data(data):
-	return
-
-
-@app.route("/<data>/all")
-@app.route("/<data>/all/")
-def all_data(data):
-	return
-
-
-@app.route('/<data>/prev/<num>')
-@app.route('/<data>/prev/<num>/')
-def prev_data(data, num):
-	return
-
-
-@app.route('/<data>/gauge')
-@app.route('/<data>/gauge/')
-def gauge(data):
-	return
-
-
-@app.route("/<data>/long")
-@app.route("/<data>/long/")
-def long(data):
-	return
-
-
-@app.route("/<data>/short")
-@app.route("/<data>/short/")
-def short(data):
-	return
-
-
-@app.route('/mysql/soft')
-def mysql_soft():
-	return
-
-
-@app.route('/mysql/hard')
-def mysql_hard():
-	return
+@app.route("/all/current")
+def all_current():
+	result = database.selectlast(1, selection=[variables[attr].data for attr in sorted(variables.keys())])[0]
+	keys = sorted(variables.keys())
+	values = dict(zip(keys, result))
+	return encode(values)
 
 
 @app.route("/export.csv")
 def export():
-	return
+    data = database.selectall()
+    values = [str(col) for col in database.telemetry.c]
+    render = flask.render_template("export.csv", database=data, values=values)
+    return flask.Response(render, mimetype='text/csv')

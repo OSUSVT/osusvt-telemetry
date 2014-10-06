@@ -8,10 +8,10 @@
   </tr>
  </thead>
  <tbody>
- {% for attr in attributes.keys() %}
+ {% for attr in displayvars %}
   <tr>
-     <th><a href="/{{ attr }}/short/">{{ attributes[attr]["title"] }}</a></th>
-     <td><a href="/{{ attr }}/gauge/"><span id="v-{{ attr }}"></span> {{ attributes[attr]["units"] }}</a></td>
+     <th><a href="{{ url_for('all_current') }}">{{ variables[attr].display }}</a></th>
+     <td><a href="{{ url_for('all_current') }}"><span id="v-{{ attr }}"></span> {{ variables[attr].units }}</a></td>
   </tr>
  {% endfor %}
  </tbody>
@@ -21,14 +21,14 @@
 <script>
     function requestData() {
     $.ajax({
-        url: '/all/current/',
+        url: "{{ url_for('all_current') }}",
         success: function(values) {
             for (attr in values) {
                 jQuery("#v-" + attr).text(values[attr]);
             }
 
             // call it again
-            setTimeout(requestData, {{ update }});
+            setTimeout(requestData, {{ config["UPDATE"] }});
         },
         cache: false
     });

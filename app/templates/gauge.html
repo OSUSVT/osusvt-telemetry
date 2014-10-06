@@ -3,10 +3,32 @@
 {% endblock %}
 {% block script %}
 <script>
-$(function () {
-    var gaugeOptions = {
+/**
+ * Request data from the server, add it to the graph and set a timeout 
+ * to request again
+ * http://www.highcharts.com/docs/working-with-data/preprocessing-live-data
+ */
+function requestData() {
+    $.ajax({
+        url: '{{ url_for("gauge_data", data=var) }}',
+        success: function(series) {
+            chart.series[0].setData(series);
+            
+            // call it again 
+            setTimeout(requestData, {{ config["UPDATE"] }});    
+        },
+        cache: false
+    });
+}
+
+$(document).ready(function() {
+	var gaugeOptions = {
         chart: {
-            type: 'solidgauge'
+			renderTo: 'content',
+            type: 'solidgauge',
+            events: {
+                load: requestData
+            }
         },
         pane: {
             center: ['50%', '90%'],
@@ -25,8 +47,8 @@ $(function () {
         },
         // the value axis
         yAxis: {
-            min: {{ minval }},
-            max: {{ maxval }},
+            min: {{ variables[var].min }},
+            max: {{ variables[var].max }},
             stops: [
                 [0.1, '#55BF3B'], // green
                 [0.5, '#DDDF0D'], // yellow
@@ -55,7 +77,7 @@ $(function () {
         },
         title: {
             floating: true,
-            text: "{{ charttitle }}",
+            text: "{{ variables[var].display }}",
             style: { "fontSize": "50px" },
             y: 50
         },
@@ -64,30 +86,20 @@ $(function () {
         },
     
         series: [{
-            name: '{{ charttitle }}',
-            data: [0],
+            name: '{{ variables[var].display }}',
             dataLabels: {
                 format: '<div style="text-align:center"><span style="font-size:50px;color:' + 
                     ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' + 
                     '<span style="font-size:24px;color:silver">{{ suffix }}</span></div>'
             },
             tooltip: {
-                valueSuffix: ' {{ suffix }}'
+                valueSuffix: ' {{ variables[var].units }}'
             }
         }]
     };
-    
-    // The speed gauge
-    $('#content').highcharts(gaugeOptions);
-
-    //Automatically Update the Gauge
-    setInterval(function () {
-        $.getJSON( "/{{ data }}/current/", function( data ) {
-            var chart = $('#content').highcharts();
-            if (chart) {
-                var point = chart.series[0].points[0];
-                point.update(data[0]);
-    }});}, {{ update }});  
+    chart = new Highcharts.Chart(gaugeOptions);        
 });
+
+
 </script>
 {% endblock %}

@@ -10,12 +10,12 @@
  */
 function requestData() {
     $.ajax({
-        url: '/{{ data }}/prev/1200/',
+        url: '{{ url_for("short_data", data=var) }}',
         success: function(series) {
             chart.series[0].setData(series);
             
             // call it again 
-            setTimeout(requestData, {{ update }});    
+            setTimeout(requestData, {{ config["UPDATE"] }});    
         },
         cache: false
     });
@@ -31,7 +31,7 @@ $(document).ready(function() {
             }
         },
         title: {
-            text: '{{ charttitle }}'
+            text: '{{ variables[var].display }}'
         },
         xAxis: {
             type: 'datetime',
@@ -42,12 +42,12 @@ $(document).ready(function() {
             minPadding: 0.2,
             maxPadding: 0.2,
             title: {
-                text: '{{ suffix }}',
+                text: '{{ variables[var].units }}',
                 margin: 80
             }
         },
         series: [{
-            name: '{{ data }}',
+            name: '{{ var }}',
             data: []
         }]
     });        

@@ -5,3 +5,7 @@
 .dashboard .graph {
     height: 240px;
 }
+h1#number {
+	font-size: 200px;
+	text-align: center;
+}

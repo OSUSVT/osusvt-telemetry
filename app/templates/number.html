@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 id=number></h1>
+{% endblock %}
+{% block script %}
+<script>
+/**
+ * Request data from the server, add it to the graph and set a timeout 
+ * to request again
+ * http://www.highcharts.com/docs/working-with-data/preprocessing-live-data
+ */
+function requestData() {
+    $.ajax({
+        url: '{{ url_for("number_data", data=var) }}',
+        success: function(value) {
+	    jQuery("#number").text(value);
+            
+            // call it again 
+            setTimeout(requestData, {{ config["UPDATE"] }});    
+        },
+        cache: false
+    });
+}
+$(document).ready(requestData());
+</script>
+{% endblock %}

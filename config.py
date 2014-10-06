@@ -1,5 +1,4 @@
-#Need to impliment this config again...
-#CONNECT = 'mysql+mysqldb://OSUSVT:ManBearPig@localhost/solarcar'
+CONNECT = 'mysql+mysqldb://solar:Phenix@localhost/solarcar'
 
 ORGNAME = "OSU Solar Vehicle Team"
 CARNAME = "Phoenix"
