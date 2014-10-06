@@ -3,29 +3,87 @@
 {% endblock %}
 {% block script %}
 <script>
-    $(function() {
-	$.getJSON('/{{ data }}/all/', function(data) {
-		// Create the chart
-		$('#content').highcharts('StockChart', {
-			rangeSelector : {
-				selected : 1,
-				inputEnabled: $('#container').width() > 480
-			},
+$(function () {
+    /**
+     * Load new data depending on the selected min and max
+     */
+    function afterSetExtremes(e) {
 
-			title : {
-				text : '{{ charttitle }}'
-			},
+        var chart = $('#content').highcharts();
 
-			series : [{
-				name : '{{ data }}',
-				data : data,
-				tooltip: {
-					valueDecimals: 2
-				}
-			}]
-		});
-	});
+        chart.showLoading('Loading data from server...');
+        $.getJSON('{{ url_for("long_data", data=var) }}' + Math.round(e.min) +
+                '/' + Math.round(e.max) + '/', function (data) {
 
+                chart.series[0].setData(data);
+                chart.hideLoading();
+            });
+    }
+
+    // See source code from the JSONP handler at https://github.com/highslide-software/highcharts.com/blob/master/samples/data/from-sql.php
+    $.getJSON('{{ url_for("long_data", data=var) }}', function (data) {
+
+        // Add a null value for the end date
+        //data = [].concat(data, [[Date.UTC(2011, 9, 14, 19, 59), null, null, null, null]]);
+
+        // create the chart
+        $('#content').highcharts('StockChart', {
+            chart : {
+                type: 'spline',
+                zoomType: 'x'
+            },
+
+            navigator : {
+                adaptToUpdatedData: false,
+                series : {
+                    data : data
+                }
+            },
+
+            scrollbar: {
+                liveRedraw: false
+            },
+
+            title: {
+                text: '{{ variables[var].display }}'
+            },
+
+            rangeSelector : {
+                buttons: [{
+                    type: 'hour',
+                    count: 1,
+                    text: '1h'
+                }, {
+                    type: 'day',
+                    count: 1,
+                    text: '1d'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                inputEnabled: false, // it supports only days
+                selected : 4 // all
+            },
+
+            xAxis : {
+                events : {
+                    afterSetExtremes : afterSetExtremes
+                },
+                minRange: 120 * 1000 // one hour
+            },
+
+            yAxis: {
+                floor: {{ variables[var].min }}
+            },
+
+            series : [{
+                data : data,
+                dataGrouping: {
+                    enabled: false
+                }
+            }]
+        });
+    });
 });
 
 </script>

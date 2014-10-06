@@ -44,11 +44,6 @@ def short_data(data):
 	return encode(value)
 	
 
-@app.route("/<data>/long")
-def long(data):
-	return
-
-
 @app.route("/<data>/gauge")
 def gauge(data):
 	return template("gauge.html", title="Gauge of {data}".format(data=variables[data].display), var=data)
@@ -59,6 +54,18 @@ def gauge_data(data):
 	value = database.selectlast(1, selection=[variables[data].data])[0]
 	return encode(value)
 	
+
+@app.route("/<data>/long")
+def long(data):
+	return template("long.html", title="Long Graph of {data}".format(data=variables[data].display), var=data)
+	
+
+@app.route("/<data>/long/data/")
+@app.route("/<data>/long/data/<int:start>/<int:end>/")
+def long_data(data, start=0, end=None):
+	values = database.selectdist(200, selection=[database.telemetry.c.epochtime, variables[data].data], min=start, max=end)
+	return encode(values)
+
 
 '''
 End of Data Section
