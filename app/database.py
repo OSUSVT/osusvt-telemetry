@@ -20,7 +20,6 @@ telemetry = sqlalchemy.Table('telemetry', metadata,
 				sqlalchemy.Column('auxpackvoltage', types.Numeric(precision=10, scale=4), nullable=False)
 			)
 metadata.create_all(engine) #Create Database if it doesn't exist
-orderby = telemetry.c.epochtime
 
 
 @app.timeit
@@ -35,13 +34,13 @@ def storeresult(result):
 
 @app.timeit
 def selectall(selection=[telemetry]):
-	s = sqlalchemy.sql.select(selection).order_by(orderby)
+	s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id)
 	return storeresult(engine.execute(s))
 	
 	
 @app.timeit
 def selectlast(num, selection=[telemetry]):
-	s = sqlalchemy.sql.select(selection).order_by(orderby).limit(num)
+	s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id).limit(num)
 	return storeresult(engine.execute(s))
 
 
@@ -49,9 +48,9 @@ def selectlast(num, selection=[telemetry]):
 def selectevery(num, min=1, max=None, selection=[telemetry]):
 	"""Min and max refer to epoch time. If Min is specified max should be also"""
 	if max:
-		s = sqlalchemy.sql.select(selection).order_by(orderby).where(telemetry.c.epochtime >= min).where((telemetry.c.id - 1) % num == 0).where(telemetry.c.epochtime <= max)
+		s = sqlalchemy.sql.select(selection).order_by(telemetry.c.epochtime).where(telemetry.c.epochtime >= min).where((telemetry.c.id - 1) % num == 0).where(telemetry.c.epochtime <= max)
 	else:
-		s = sqlalchemy.sql.select(selection).order_by(orderby).where((telemetry.c.id - 1) % num == 0)
+		s = sqlalchemy.sql.select(selection).order_by(telemetry.c.epochtime).where((telemetry.c.id - 1) % num == 0)
 	return storeresult(engine.execute(s))
 	
 
