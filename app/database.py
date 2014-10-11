@@ -3,7 +3,7 @@ import sqlalchemy #pip install sqlalchemy mysql-python
 import sqlalchemy.types as types
 
 
-engine = sqlalchemy.create_engine(app.app.config["CONNECT"], echo=False);
+engine = sqlalchemy.create_engine(app.app.config["TELEMETRYDB"], echo=False);
 metadata = sqlalchemy.MetaData()
 telemetry = sqlalchemy.Table('telemetry', metadata,
 				sqlalchemy.Column('id', types.Integer(), primary_key=True, nullable=False),
