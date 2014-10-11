@@ -5,21 +5,21 @@ Deploy to Windows
 For simplicity we are using all 32-bit packages. XAMPP and the mysql-python libraries do not have 64bit versions
 
 ###Overview
-Install Python
-Install XAMPP
-Clone Repo
-Generate Virtualenv
- - install pip using get-pip.py
- - install virtualenv using pip
- - install mysql-python
- - generate a virtualenv
- - use the bash script to install mysql-python in virtualenv
- - install other requirements
-Add the Apache Module mod_wsgi
-Configure Apache
+ 1. Install Python
+ 2. Install XAMPP
+ 3. Clone Repo
+ 4. Generate Virtualenv
+   - install pip using get-pip.py
+   - install virtualenv using pip
+   - install mysql-python
+   - generate a virtualenv
+   - use the bash script to install mysql-python in virtualenv
+   - install other requirements
+ 5. Add the Apache Module mod_wsgi
+ 6. Configure Apache
 
 ###Install Python
-Download and install [Python](https://www.python.org/downloads/release/python-278/) Use the x86 MSI Installer.
+Download and install [Python](https://www.python.org/downloads/release/python-278/) (use the x86 MSI Installer)
 
 ###Install XAMPP
 Download and install [XAMPP](https://www.apachefriends.org/download.html), XAMPP 1.8.3 used here. Not all of the components are nessasary.
@@ -33,7 +33,7 @@ For Example, download the zip file from github and unzip it into `C:\xampp`
 ###Generate Virtualenv
 
 ####Install Pip
-Download [get-pip.py](https://bootstrap.pypa.io/get-pip.py) and place it on the root of `C:` (Or somewhere otherwise easy to type into CMD)
+Download [get-pip.py](https://bootstrap.pypa.io/get-pip.py) and place it on the root of `C:` (easy to type into CMD)
 
 Open CMD Prompt
 ```
@@ -98,13 +98,15 @@ pip install -r requirements.txt
 ```
 
 ###Install mod_wsgi
-Download the a copy of [mod_wsgi](http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi) that matches what we are using, `mod_wsgi‑3.5.ap24.win32‑py2.7.zip used here. Also available in this folder.
+Download the a copy of [mod_wsgi](http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi) that matches what we are using, `mod_wsgi‑3.5.ap24.win32‑py2.7.zip` used here. Also available in this folder.
 
 Copy the `mod_wsgi.so` file to `C:\xampp\apache\modules\`
 
 ###Configure Apache
 Use XAMPP Control Panel to open the httpd.conf file
-![xampp control panel](xamppcontrol.png]
+
+![xampp control panel](xamppcontrol.png "Picture of XAMPP Control Panel")
+
 Add the following to the end of the httpd.conf file
 ```
 LoadModule wsgi_module modules/mod_wsgi.so
@@ -126,6 +128,7 @@ Replace `Required all denied` with `Required all granted`
 ##Setup MySQL
 
 Start mysql using xampp control panel
+
 Open CMD Prompt
 ```
 C:\xampp\mysql\mysql.exe -uroot
@@ -138,4 +141,4 @@ GRANT ALL ON telemetry.* TO 'solar'@'localhost' IDENTIFIED BY 'Phenix';
 Success
 =======
 Start Apache and MySQL
-Navigate to http:\\localhost\ in your browser
+Navigate to `http:\\localhost\` in your browser
