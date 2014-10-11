@@ -1,7 +1,10 @@
-Install on Webserver
-====================
+Deploy to Windows
+=================
+##Install the Webserver
+
 For simplicity we are using all 32-bit packages. XAMPP and the mysql-python libraries do not have 64bit versions
-##Overview
+
+###Overview
 Install Python
 Install XAMPP
 Clone Repo
@@ -15,38 +18,43 @@ Generate Virtualenv
 Add the Apache Module mod_wsgi
 Configure Apache
 
-##Install Python
+###Install Python
 Download and install [Python](https://www.python.org/downloads/release/python-278/) Use the x86 MSI Installer.
 
-##Install XAMPP
+###Install XAMPP
 Download and install [XAMPP](https://www.apachefriends.org/download.html), XAMPP 1.8.3 used here. Not all of the components are nessasary.
 ![xampp settings](xampp.png "XAMPP Settings")
-##Clone Repo
-Using whatever method you would like get the osusvt-telemetry git repo inside of `C:\xampp\`
-For Example, download the zip file from github and unzip it into `C:\xampp`
-##Generate Virtualenv
 
-###Install Pip
-Download [get-pip.py](https://bootstrap.pypa.io/get-pip.py) and place it on the root of "C:" (Or somewhere otherwize easy to type into CMD)
+###Clone Repo
+Using whatever method you would like, get the `osusvt-telemetry` git repo inside of `C:\xampp\`
+
+For Example, download the zip file from github and unzip it into `C:\xampp`
+
+###Generate Virtualenv
+
+####Install Pip
+Download [get-pip.py](https://bootstrap.pypa.io/get-pip.py) and place it on the root of `C:` (Or somewhere otherwise easy to type into CMD)
+
 Open CMD Prompt
 ```
 cd C:
 C:\Python27\python.exe get-pip.py
 ```
-The script should install pip
+Pip should now be installed.
 
-###Install Virtualenv
+####Install Virtualenv
+
 Using previous CMD Prompt
 ```
 C:\Python27\Scripts\pip.exe install virtualenv
 ```
 
-###Install mysql-python
-Normally we install python packages using Pip. Sadly in order to install/compile mysql-python using pip we would need a variety of strange libraries, because I was not able to figure it out we will have to use a pre-compiled .exe containing the needed information
+####Install mysql-python
+Normally we install python packages using Pip. Sadly in order to install/compile mysql-python using pip we would need a variety of strange libraries. I was not able to figure it out, so we will use a pre-compiled .exe containing the needed information
 
 Download and install [mysql-python](http://sourceforge.net/projects/mysql-python/), also provided in this folder.
 
-###Build a virtualenv
+####Build a virtualenv
 Using previous CMD Prompt
 ```
 cd C:\xampp\osusvt-telemetry\
@@ -62,14 +70,14 @@ If you get to a python prompt, the virtualenv is installed
 >>> exit()
 ```
 
-###Copy mysql-python
+####Copy mysql-python
 We need to copy the mysql-python code that we installed into our virtualenv
+
 Using previous CMD Prompt (if you closed it you will need to activate it again)
 ```
 env\Scripts\activate.bat
-python
 ```
-Run the [mysql-python-virtualenv](https://gist.github.com/georgevreilly/8444988) script:
+Run the [mysql-python-virtualenv](https://gist.github.com/georgevreilly/8444988) script: (Also Available in this Folder)
 ```
 deployment\windows\mysql-python-virtualenv.bat
 ```
@@ -79,23 +87,22 @@ notepad.exe requirements.txt
 ```
 change `mysql-python` to `#mysql-python`
 
-###Install requirements
+####Install remaining requirements
 Using previous CMD Prompt (if you closed it you will need to activate it again)
 ```
 env\Scripts\activate.bat
-python
 ```
 Install Packages using Pip
 ```
 pip install -r requirements.txt
+```
 
-##Install mod_wsgi
-Download the a copy of [mod_wsgi](http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi) that matches what we are using, `mod_wsgi‑3.5.ap24.win32‑py2.7.zip used here.
-Because I felt that that website was a bit shady, so there is a copy in this directory
+###Install mod_wsgi
+Download the a copy of [mod_wsgi](http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi) that matches what we are using, `mod_wsgi‑3.5.ap24.win32‑py2.7.zip used here. Also available in this folder.
 
 Copy the `mod_wsgi.so` file to `C:\xampp\apache\modules\`
 
-##Configure Apache
+###Configure Apache
 Use XAMPP Control Panel to open the httpd.conf file
 ![xampp control panel](xamppcontrol.png]
 Add the following to the end of the httpd.conf file
@@ -116,8 +123,8 @@ Find the text
 ```
 Replace `Required all denied` with `Required all granted`
 
-Setup MySQL
-===========
+##Setup MySQL
+
 Start mysql using xampp control panel
 Open CMD Prompt
 ```
