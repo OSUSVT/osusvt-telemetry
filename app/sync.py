@@ -8,7 +8,7 @@ telemetrydb = sqlalchemy.create_engine(app.app.config["TELEMETRYDB"], echo=False
 telemetrymaxid = 0
 
 #When debug is True, instead of trying to syncronize the databases as fast as possible it increments them in steps equal to debuglimit, this can be usefull for testing how quickly the interface updates
-debug = True
+debug = False
 debuglimit = 1
 
 #app.database.metadata.create_all(sourcedb) #Should not be needed because the database already exists, but it should produce an error if the definition doesn't match
@@ -64,9 +64,9 @@ def sync_sqlalchemy():
 	else:
 		s = sqlalchemy.sql.select([telemetry]).where(telemetry.c.id > telemetrymaxid)
 	result = sourcedb.execute(s).fetchall()
-	#Error will be produced here if result contains to data, but it will get handled in the try except in loop()
-	s = sqlalchemy.sql.insert(telemetry)
-	telemetrydb.execute(s, result)
+	if len(result):
+		s = sqlalchemy.sql.insert(telemetry)
+		telemetrydb.execute(s, result)
 	
 
 
