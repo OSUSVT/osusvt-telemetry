@@ -4,16 +4,18 @@ OSUSVT Telemetry
 Home of the Oregon State University Solar Car Team Telemetry App. This App is written in Python using the [Flask Framework](http://flask.pocoo.org/docs/0.10/) and [SqlAlchemy](http://docs.sqlalchemy.org/en/rel_0_9/core/tutorial.html). The webpages produced utilize the [Highcharts API](http://www.highcharts.com/) to render graphs in javascript.
 
 ###Development Setup
- 1. Get the repo
-```
-git clone ...
-cd osusvt-telemetry
-```
- 2. Insure that VirtualEnv and the Python Development Headers are Installed
-```
-# If using yum...
-sudo yum install python-virtualenv python python-pip python-devel gcc
-```
+1. Get the repo
+
+  ```
+  git clone ...
+  cd osusvt-telemetry
+  ```
+2. Insure that VirtualEnv and the Python Development Headers are Installed
+
+  ```
+  # If using yum...
+  sudo yum install python-virtualenv python python-pip python-devel gcc
+  ```
 3. Make a VirtualEnv named `env`
 
   ```
