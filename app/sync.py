@@ -1,9 +1,10 @@
 import app
-from app.database import telemetry, engine #We need the table definition
+from app.database import telemetry #We need the table definition
 import sqlalchemy
 import multiprocessing
 
 sourcedb = sqlalchemy.create_engine(app.app.config["SOURCEDB"], echo=False);
+telemetrydb = sqlalchemy.create_engine(app.app.config["TELEMETRYDB"], echo=False);
 telemetrymaxid = 0
 
 #When debug is True, instead of trying to syncronize the databases as fast as possible it increments them in steps equal to debuglimit, this can be usefull for testing how quickly the interface updates
@@ -13,12 +14,16 @@ debuglimit = 100
 #app.database.metadata.create_all(sourcedb) #Should not be needed because the database already exists, but it should produce an error if the definition doesn't match
 
 
+l = multiprocessing.Lock()
+
 
 def daemon():
-    sync = sync_select()
+    #What sync method are we using?
+    sync, engine = sync_select()
+    print sync
     #Code for running first sync
     print "Starting First Sync, if there is alot of data this could take a while"
-    sync()
+    sync(engine)
     print "First Sync Complete, Launching Daemon"
     #Code for launching further syncs in a separate proccess here
     daemon_process = multiprocessing.Process(target=loop, name="syncloop")
@@ -26,11 +31,11 @@ def daemon():
     daemon_process.start()
 
 
-def loop():
-    sync = sync_select()
+def loop(once=False):
+    sync, engine = sync_select()
     while(1):
 	try: #The Show Must go on!
-	    sync()
+	    sync(engine)
 	except sqlalchemy.exc.DBAPIError:
 	    pass #Raised when execution of database operations fails
 	except sqlalchemy.exc.SQLAlchemyError:
@@ -38,28 +43,27 @@ def loop():
 
 
 def sync_select():
-	if engine.driver == "mysqldb" and sourcedb.driver == "mysqldb":
-		return sync_mysql 
+	if telemetrydb.driver == "mysqldb" and sourcedb.driver == "mysqldb":
+		return sync_mysql, telemetrydb
 		# sync_mysql operates under the assumption that the databases are both mysql. It uses a literal sql expression to add the data that is very fast
 	else:
-		return sync_sqlalchemy
+		return sync_sqlalchemy, app.database.engine
 		# sync_sqlalchemy will take advantage of sqlalchemy's abstractions to work on most compatable databases
 
-def sync_mysql():
+def sync_mysql(engine):
 	telemetrymaxid = maxid(engine)
 	#Query for values greater than the ones that we have
 	if debug:
 		s = sqlalchemy.sql.expression.text("INSERT INTO telemetry.telemetry SELECT * FROM telemetry WHERE telemetry.id > :telemetrymaxid ORDER BY telemetry.id LIMIT :limit").bindparams(telemetrymaxid=telemetrymaxid, limit=debuglimit)
 	else:
 		s = sqlalchemy.sql.expression.text("INSERT INTO telemetry.telemetry SELECT * FROM telemetry WHERE telemetry.id > :telemetrymaxid ORDER BY telemetry.id").bindparams(telemetrymaxid=telemetrymaxid)
-	l = multiprocessing.Lock()
+	sourcedb.execute(s)
+
+
+def sync_sqlalchemy(engine):
 	l.acquire()
-	sourcedb.execute(s) #get data from source
-	l.release()
-
-
-def sync_sqlalchemy():
 	telemetrymaxid = maxid(engine)
+	l.release()
 	if debug:
 		s = sqlalchemy.sql.select([telemetry]).where(telemetry.c.id > telemetrymaxid).limit(debuglimit)
 	else:
@@ -67,7 +71,6 @@ def sync_sqlalchemy():
 	result = sourcedb.execute(s).fetchall()
 	#Error will be produced here if result contains to data, but it will get handled in the try except in loop()
 	s = sqlalchemy.sql.insert(telemetry)
-	l = multiprocessing.Lock()
 	l.acquire()
 	engine.execute(s, result)
 	l.release()
