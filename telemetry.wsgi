@@ -1,6 +1,5 @@
 import os
 import platform
-from app import sync
 
 #Virtualenv stores the activate_this script in different places depending on what os you are using
 if platform.system() == "Windows":
@@ -16,6 +15,7 @@ execfile(activate_this, dict(__file__=activate_this))
 import sys
 sys.path.insert(0, working_directory)
 
+from app import sync
 sync.daemon()
 
 from app import app as application
