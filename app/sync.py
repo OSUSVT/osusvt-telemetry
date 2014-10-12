@@ -45,7 +45,6 @@ def sync_select():
 		return sync_sqlalchemy
 		# sync_sqlalchemy will take advantage of sqlalchemy's abstractions to work on most compatable databases
 
-@app.timeit
 def sync_mysql():
 	telemetrymaxid = maxid(engine)
 	#Query for values greater than the ones that we have
@@ -56,7 +55,6 @@ def sync_mysql():
 	sourcedb.execute(s) #get data from source
 
 
-@app.timeit
 def sync_sqlalchemy():
 	telemetrymaxid = maxid(engine)
 	if debug:
