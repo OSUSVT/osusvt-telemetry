@@ -2,6 +2,7 @@ import app
 from app.database import telemetry #We need the table definition
 import sqlalchemy
 import time
+import multiprocessing
 
 sourcedb = sqlalchemy.create_engine(app.app.config["SOURCEDB"], echo=False);
 telemetrydb = sqlalchemy.create_engine(app.app.config["TELEMETRYDB"], echo=False);
@@ -20,15 +21,25 @@ def daemon():
     sync()
     print "First Sync Complete, Launching Daemon"
     #Code for launching further syncs in a separate proccess here
+    daemon_process = multiprocessing.Process(target=loop, name="syncloop")
+    daemon_process.daemon = True
+    daemon_process.start()
 
-@app.timeit
+
+def loop():
+    while(1):
+	sync()
+
+
 def sync():
     telemetrymaxid = maxid(telemetrydb)
     sourcemaxid = maxid(sourcedb)
     if countrows(sourcedb) or sourcemaxid > telemetrymaxid:
 	#Query for values greater than the ones that we have
-	s = sqlalchemy.sql.select([telemetry]).order_by(telemetry.c.id).where(telemetry.c.id > telemetrymaxid).limit(10)
-	result = sourcedb.execute(s).fetchall() #get data from source
+	if debug:
+		s = sqlalchemy.sql.expression.text("INSERT INTO telemetry.telemetry SELECT * FROM telemetry WHERE telemetry.id > :telemetrymaxid ORDER BY telemetry.id LIMIT :limit").bindparams(telemetrymaxid=telemetrymaxid, limit=1)
+	else:
+		s = sqlalchemy.sql.expression.text("INSERT INTO telemetry.telemetry SELECT * FROM telemetry WHERE telemetry.id > :telemetrymaxid ORDER BY telemetry.id").bindparams(telemetrymaxid=telemetrymaxid)
 	sourcedb.execute(s) #get data from source
 
 
