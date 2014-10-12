@@ -52,7 +52,10 @@ def sync_mysql():
 		s = sqlalchemy.sql.expression.text("INSERT INTO telemetry.telemetry SELECT * FROM telemetry WHERE telemetry.id > :telemetrymaxid ORDER BY telemetry.id LIMIT :limit").bindparams(telemetrymaxid=telemetrymaxid, limit=debuglimit)
 	else:
 		s = sqlalchemy.sql.expression.text("INSERT INTO telemetry.telemetry SELECT * FROM telemetry WHERE telemetry.id > :telemetrymaxid ORDER BY telemetry.id").bindparams(telemetrymaxid=telemetrymaxid)
+	l = multiprocessing.Lock()
+	l.acquire()
 	sourcedb.execute(s) #get data from source
+	l.release()
 
 
 def sync_sqlalchemy():
@@ -64,7 +67,10 @@ def sync_sqlalchemy():
 	result = sourcedb.execute(s).fetchall()
 	#Error will be produced here if result contains to data, but it will get handled in the try except in loop()
 	s = sqlalchemy.sql.insert(telemetry)
+	l = multiprocessing.Lock()
+	l.acquire()
 	engine.execute(s, result)
+	l.release()
 	
 
 

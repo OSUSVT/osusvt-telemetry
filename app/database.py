@@ -83,7 +83,7 @@ def maxepoch():
 def selectdist(num, min=1, max=None, selection=[telemetry]):
 	"""Min and max refer to epoch time. If Min is specified Max should be also"""
 	if max:
-		s = sqlalchemy.sql.select([sqlalchemy.func.count(telemetry.c.id)]).where((telemetry.c.id.desc() - 1) % num == 0).where(telemetry.c.epochtime <= max)
+		s = sqlalchemy.sql.select([sqlalchemy.func.count(telemetry.c.id)]).where((telemetry.c.id - 1) % num == 0).where(telemetry.c.epochtime <= max)
 		countnum = engine.execute(s).fetchall()[0][0]
 	else:
 		countnum = countrows()
