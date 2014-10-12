@@ -15,4 +15,5 @@ ORGNAME = "OSU Solar Vehicle Team"
 CARNAME = "Phoenix"
 
 #How long (in ms) should the JavaScript wait after recieving it's last update to request it again?
+#Note: Because Short graphs pull so much data, this value is multiplied by 10, change app/templates/short.html if you don't like this behavior
 UPDATE = 250

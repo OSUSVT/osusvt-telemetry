@@ -15,7 +15,7 @@ function requestData() {
             chart.series[0].setData(series);
             
             // call it again 
-            setTimeout(requestData, {{ config["UPDATE"] }});    
+            setTimeout(requestData, {{ config["UPDATE"] * 10 }});    
         },
         cache: false
     });
