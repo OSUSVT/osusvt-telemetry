@@ -28,7 +28,11 @@ pip install -r requirements.txt
 ```
 source env/bin/activate
 ```
-6. Run the development webserver
+6. Edit Config (if nessasary)
+```
+vi config.py
+```
+7. Run the development webserver
 ```
 python devrun.py
 ```
