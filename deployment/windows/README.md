@@ -28,7 +28,7 @@ Download and install [XAMPP](https://www.apachefriends.org/download.html), XAMPP
 ###Clone Repo
 Using whatever method you would like, get the `osusvt-telemetry` git repo inside of `C:\xampp\`
 
-For Example, download the zip file from github and unzip it into `C:\xampp`
+For Example, download the zip file from github and extract it to `C:\xampp\osusvt-telemetry\`
 
 ###Generate Virtualenv
 
@@ -37,8 +37,7 @@ Download [get-pip.py](https://bootstrap.pypa.io/get-pip.py) and place it on the 
 
 Open CMD Prompt
 ```
-cd C:
-C:\Python27\python.exe get-pip.py
+C:\Python27\python.exe C:\get-pip.py
 ```
 Pip should now be installed.
 
@@ -83,7 +82,7 @@ deployment\windows\mysql-python-virtualenv.bat
 ```
 MySQLdb should now be available, so we can remove it from the requirements.txt file
 ```
-notepad.exe requirements.txt
+"C:\Program Files (x86)\Notepad++\notepad++.exe" requirements.txt
 ```
 change `mysql-python` to `#mysql-python`
 
@@ -131,14 +130,29 @@ Start mysql using xampp control panel
 
 Open CMD Prompt
 ```
-C:\xampp\mysql\mysql.exe -uroot
+C:\xampp\mysql\bin\mysql.exe -uroot
 ```
 This should open a mysql prompt, run the following commands to create the database and user
 ```
 CREATE DATABASE telemetry;
-GRANT ALL ON telemetry.* TO 'solar'@'localhost' IDENTIFIED BY 'Phenix';
+CREATE DATABASE solarcar;
+GRANT ALL ON *.* TO 'solar'@'localhost' IDENTIFIED BY 'Phenix';
 ```
+
+###Build the solarcar database
+
+Normally this step would not be nessasary, because the Tablet would create this database. However, if there is no database it will not run at all.
+
+Download [telemetry.sql](http://web.engr.oregonstate.edu/~hoeftc/telemetry.sql)
+
+```
+C:\xampp\mysql\bin\mysql.exe -uroot < telemetry.sql
+```
+
 Success
 =======
 Start Apache and MySQL
+
 Navigate to `http:\\localhost\` in your browser
+
+The First time you go to the page it could take a long time for the page to load depending on how much information it need to grab
