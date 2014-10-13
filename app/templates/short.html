@@ -18,7 +18,7 @@ function requestData() {
             setTimeout(requestData, {{ config["UPDATE"] * 10 }});    
         },
         cache: false
-    });
+    }).retry({times:12, timeout:5000});
 }
 
 $(document).ready(function() {

@@ -31,7 +31,7 @@
             setTimeout(requestData, {{ config["UPDATE"] }});
         },
         cache: false
-    });
+    }).retry({times:12, timeout:5000});
 }
 $(document).ready(requestData());
 </script>
