@@ -17,3 +17,6 @@ CARNAME = "Phoenix"
 #How long (in ms) should the JavaScript wait after recieving it's last update to request it again?
 #Note: Because Short graphs pull so much data, this value is multiplied by 10, change app/templates/short.html if you don't like this behavior
 UPDATE = 250
+
+#Google Maps API Key, get one at https://console.developers.google.com
+GMAPSAPIKEY = ""

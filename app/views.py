@@ -24,7 +24,7 @@ def current_data(data):
 	
 @app.route("/<data>/number")
 def number(data):
-	return template("number.html", title="Number Display of {data}".format(data=variables[data].display), var=data)
+	return template("number.html", title="Number Display of {data}".format(data=variables[data].display), var=data, contentclass="fullwidth")
 
 	
 @app.route("/<data>/number/data")
@@ -35,7 +35,7 @@ def number_data(data):
 	
 @app.route("/<data>/short")
 def short(data):
-	return template("short.html", title="Short Graph of {data}".format(data=variables[data].display), var=data)
+	return template("short.html", title="Short Graph of {data}".format(data=variables[data].display), var=data, contentclass="fullwidth")
 
 	
 @app.route("/<data>/short/data")
@@ -46,7 +46,7 @@ def short_data(data):
 
 @app.route("/<data>/gauge")
 def gauge(data):
-	return template("gauge.html", title="Gauge of {data}".format(data=variables[data].display), var=data)
+	return template("gauge.html", title="Gauge of {data}".format(data=variables[data].display), var=data, contentclass="gauge")
 
 	
 @app.route("/<data>/gauge/data")
@@ -57,7 +57,7 @@ def gauge_data(data):
 
 @app.route("/<data>/long")
 def long(data):
-	return template("long.html", title="Long Graph of {data}".format(data=variables[data].display), var=data)
+	return template("long.html", title="Long Graph of {data}".format(data=variables[data].display), var=data, contentclass="fullwidth")
 	
 
 @app.route("/<data>/long/data/")
@@ -76,7 +76,7 @@ End of Data Section
 @app.route('/index')
 @app.route('/dash')
 def dash():
-	return template("base.html", title="Dash")
+	return template("base.html", title="Dash", contentclass="fullwidth")
 
 
 @app.route('/dash/data')
@@ -86,12 +86,12 @@ def dash_data():
 
 @app.route('/raw')
 def raw():
-	return template("raw.html", title="Raw")
+	return template("raw.html", title="Raw", contentclass="fullwidth")
 
 
 @app.route('/map')
 def map():
-	return
+	return template("map.html", title="Map", contentclass="fullwidth")
 
 
 @app.route("/all/current")

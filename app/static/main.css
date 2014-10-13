@@ -1,9 +1,17 @@
-.dashboard .current {
-    font-size: 80px;
-
+div#window {
+	padding-top: 50px;
+	height: 100%;
 }
-.dashboard .graph {
-    height: 240px;
+div#content {
+	height: 100%;
+}
+div#content.fullwidth {
+	width: 100%;
+}
+div#content.gauge {
+	width: 100%;
+	min-height: 325px;
+	max-height: 625px;
 }
 h1#number {
 	font-size: 200px;
