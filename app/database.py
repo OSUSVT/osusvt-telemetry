@@ -37,7 +37,7 @@ def selectall(selection=[telemetry]):
 	
 	
 def selectlast(num, selection=[telemetry]):
-	sub = sqlalchemy.sql.select(selection).order_by(telemetry.c.id.desc()).limit(num)
+	sub = sqlalchemy.sql.select(selection).order_by(telemetry.c.id.desc()).limit(num).alias("data")
 	s = sqlalchemy.sql.select('*').select_from(sub).order_by('epochtime')
 	return storeresult(engine.execute(s))
 
