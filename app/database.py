@@ -34,11 +34,17 @@ def storeresult(result):
 def selectall(selection=[telemetry]):
 	s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id.desc())
 	return storeresult(engine.execute(s))
+
 	
+def selectcurrent(selection=[telemetry]):
+	s = sqlalchemy.sql.select(selection).order_by(telemetry.c.id.desc()).limit(1)
+	return storeresult(engine.execute(s))
+
 	
 def selectlast(num, selection=[telemetry]):
-	sub = sqlalchemy.sql.select(selection).order_by(telemetry.c.id.desc()).limit(num).alias("data")
-	s = sqlalchemy.sql.select('*').select_from(sub).order_by('epochtime')
+	"""Selection must contain telemetry.c.epochtime"""
+	sub = sqlalchemy.sql.select(selection).order_by(telemetry.c.id.desc()).limit(num).alias("telemetry")
+	s = sqlalchemy.sql.select('*').select_from(sub).order_by(telemetry.c.epochtime)
 	return storeresult(engine.execute(s))
 
 

@@ -16,7 +16,7 @@ Data
 '''
 @app.route("/<data>/current")
 def current_data(data):
-	value = database.selectlast(1, #Only want one value (LIMIT 1)
+	value = database.selectcurrent(#Only want one value (LIMIT 1)
 								selection=[variables[data].data] #SELECT data from the columns specified
 								)[0] #Function returns an Array with one value so we have to enter it
 	return encode(value)
@@ -29,7 +29,7 @@ def number(data):
 	
 @app.route("/<data>/number/data")
 def number_data(data):
-	value = database.selectlast(1, selection=[variables[data].data])[0]
+	value = database.selectcurrent(selection=[variables[data].data])[0]
 	return encode(value)
 	
 	
@@ -51,7 +51,7 @@ def gauge(data):
 	
 @app.route("/<data>/gauge/data")
 def gauge_data(data):
-	value = database.selectlast(1, selection=[variables[data].data])[0]
+	value = database.selectcurrent(selection=[variables[data].data])[0]
 	return encode(value)
 	
 
@@ -96,7 +96,7 @@ def map():
 
 @app.route("/all/current")
 def all_current():
-	result = database.selectlast(1, selection=[variables[attr].data for attr in sorted(variables.keys())])[0]
+	result = database.selectcurrent(selection=[variables[attr].data for attr in sorted(variables.keys())])[0]
 	keys = sorted(variables.keys())
 	values = dict(zip(keys, result))
 	return encode(values)
