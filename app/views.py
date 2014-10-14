@@ -86,12 +86,19 @@ def dash_data():
 
 @app.route('/raw')
 def raw():
-	return template("raw.html", title="Raw", contentclass="fullwidth")
+	return template("raw.html", title="Raw")
 
 
 @app.route('/map')
 def map():
 	return template("map.html", title="Map", contentclass="fullwidth")
+
+	
+@app.route('/map/data')
+def map_data():
+	result = database.selectcurrent(selection=[variables["latitude"].data, variables["longitude"].data])[0]
+	return encode(result)
+	
 
 
 @app.route("/all/current")

@@ -20,9 +20,9 @@ class Variable:
 
 variables = dict()
 """Follow the Pattern to Make Variables appear in the Interface"""
-variables['latitude'] = Variable(data=app.database.telemetry.c.latitude,
+variables['latitude'] = Variable(data=app.database.telemetry.c.latitude/100,
 								 display="Latitude")
-variables['longitude'] = Variable(data=app.database.telemetry.c.longitude,
+variables['longitude'] = Variable(data=-app.database.telemetry.c.longitude/100,
 								  display="Longitude")
 variables['elevation'] = Variable(data=app.database.telemetry.c.elevation)
 variables['velocity'] = Variable(data=app.database.telemetry.c.velocity)
