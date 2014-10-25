@@ -143,10 +143,10 @@ GRANT ALL ON *.* TO 'solar'@'localhost' IDENTIFIED BY 'Phenix';
 
 Normally this step would not be nessasary, because the Tablet would create this database. However, if there is no database it will not run at all.
 
-Download [telemetry.sql](http://web.engr.oregonstate.edu/~hoeftc/telemetry.sql)
+Download [telemetry.sql](http://web.engr.oregonstate.edu/~hoeftc/telemetry.sql) and place it on the root of `C:` (easy to type into CMD)
 
 ```
-C:\xampp\mysql\bin\mysql.exe -uroot < telemetry.sql
+C:\xampp\mysql\bin\mysql.exe -uroot solarcar < C:\telemetry.sql
 ```
 
 Success
@@ -156,3 +156,11 @@ Start Apache and MySQL
 Navigate to `http:\\localhost\` in your browser
 
 The First time you go to the page it could take a long time for the page to load depending on how much information it need to grab
+
+Troubleshooting
+===============
+1. Keep in mind that the first time you go to the web page it make take longer than usual because it initializing the code.
+2. Try Launching Using Development Server (run `devrun.py` in virtualenv)
+3. Look at the apache logs (Accessable using the XAMPP Control Panel)
+4. Edit the config file to use mysql instead of sqlite
+5. If you think there is a multiproccess problem, try running something like `python -e 'from app.sync import *; loop()'` to run the sync outside of the loop
