@@ -163,4 +163,4 @@ Troubleshooting
 2. Try Launching Using Development Server (run `devrun.py` in virtualenv)
 3. Look at the apache logs (Accessable using the XAMPP Control Panel)
 4. Edit the config file to use mysql instead of sqlite
-5. If you think there is a multiproccess problem, try running something like `python -e 'from app.sync import *; loop()'` to run the sync outside of the loop
+5. If you think there is a multiproccess problem, try running something like `python -c 'from app.sync import *; loop()'` to run the sync outside of the loop
