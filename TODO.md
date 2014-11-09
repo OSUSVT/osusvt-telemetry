@@ -8,10 +8,4 @@
 ##Build a new Dashboard for quick information
 ##Integrate Efficiency Calculations
 ##Ponder the merit of a custom views drop down whose contents are determined by a similar class like variables.py
-##Ponder how to do highcharts with multiple lines for different variables (perhaps determined by checkbox?)
-```
-http://flask.pocoo.org/docs/0.10/quickstart/#the-request-object
-http://werkzeug.pocoo.org/docs/0.9/routing/#quickstart
-http://werkzeug.pocoo.org/docs/0.9/datastructures/#werkzeug.datastructures.MultiDict
-```
-##Kill all Humans!!
+##Event handling

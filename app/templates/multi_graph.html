@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <form action="{{ url_of_page }}" method='get' class="form" role="form">
-  {% for data in variables.keys() %}
+  {% for data in variables.keys() if variables[data].graphs %}
   <div class="checkbox">
     <label>
       <input name='data' type="checkbox" value="{{ data }}"> {{ variables[data].display }}
