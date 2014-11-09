@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+{% endblock %}
+{% block script %}
+<script>
+/**
+ * Load new data depending on the selected min and max
+ */
+{% autoescape off %}{# If we do not disable this temporarily, then it will make the json we are rendering useless #}
+variable_data = {{ variable_data }};
+{% endautoescape %}
+shown_variables = Object.keys(variable_data);
+data_url = '{{ url_for('shortmulti_data') }}'+'?'+jQuery.param({'data': shown_variables},true)
+/**
+ * Request data from the server, add it to the graph and set a timeout 
+ * to request again
+ * http://www.highcharts.com/docs/working-with-data/preprocessing-live-data
+ */
+function requestData() {
+    $.ajax({
+        url: data_url,
+        success: function(ajaxdata) {
+			{% for index,data in shown_variables %}
+				chart.series[{{ index }}].setData(ajaxdata['{{ data }}']);
+            {% endfor %}
+            // call it again 
+            setTimeout(requestData, {{ config["UPDATE"] * 10 }});    
+        },
+        cache: false
+    }).retry({times:12, timeout:5000});
+}
+
+$(document).ready(function() {
+    chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'content',
+            defaultSeriesType: 'spline',
+            events: {
+                load: requestData
+            }
+        },
+        title: {
+            text: '{{ title }}'
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150,
+            maxZoom: 20 * 1000
+        },
+        yAxis: [
+			{% for index,data in shown_variables %}
+			{
+				labels: {
+					format: '{value} {{ variables[data].units }}',
+					style: {
+						color: Highcharts.getOptions().colors[{{ index }}]
+					}
+				},
+				title: {
+					text: '{{ variables[data].display }}',
+					style: {
+						color: Highcharts.getOptions().colors[{{ index }}]
+					}
+				},
+				opposite: {{ "true" if index%2 else "false" }},
+				max: {{ variables[data].max }},
+                min: {{ variables[data].min }}
+            },
+			{% endfor %}
+			],
+			tooltip: {
+				shared: true
+			},
+			series: [
+			{% for index,data in shown_variables %}
+			{
+				name: '{{ variables[data].display }}',
+				yAxis: {{ index }},
+				index: {{ index }},
+                data : [],
+                dataGrouping: {
+                    enabled: false
+                },
+				marker: {
+					enabled: false
+				},
+				tooltip: {
+					valueSuffix: '{{ variables[data].units }}'
+				}
+            },
+			{% endfor %}
+		]
+    });        
+});
+</script>
+{% endblock %}

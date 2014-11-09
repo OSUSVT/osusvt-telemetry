@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 id=number></h1>
+<h1 id="number"><span id="value"></span> {{ variables[var].units }}</h1>
 {% endblock %}
 {% block script %}
 <script>
@@ -13,7 +13,7 @@ function requestData() {
     $.ajax({
         url: '{{ url_for("number_data", data=var) }}',
         success: function(value) {
-	    jQuery("#number").text(value);
+	    jQuery("#value").text(value);
             
             // call it again 
             setTimeout(requestData, {{ config["UPDATE"] }});    

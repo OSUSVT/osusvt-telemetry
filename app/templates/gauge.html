@@ -61,8 +61,8 @@ $(document).ready(function() {
             labels: {
                 enabled: true,
                 style: { "fontSize": "30px" },
-                y: 30,
-                distance: -50
+                y: 50,
+                distance: -85
 
             }        
         },
@@ -79,7 +79,7 @@ $(document).ready(function() {
             floating: true,
             text: "{{ variables[var].display }}",
             style: { "fontSize": "50px" },
-            y: 50
+            y: 75
         },
         credits: {
             enabled: false
@@ -89,8 +89,7 @@ $(document).ready(function() {
             name: '{{ variables[var].display }}',
             dataLabels: {
                 format: '<div style="text-align:center"><span style="font-size:50px;color:' + 
-                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' + 
-                    '<span style="font-size:24px;color:silver">{{ suffix }}</span></div>'
+                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y} {{ variables[var].units }}</span><br/>'
             },
             tooltip: {
                 valueSuffix: ' {{ variables[var].units }}'

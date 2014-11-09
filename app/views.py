@@ -103,8 +103,8 @@ def map_data():
 
 @app.route("/all/current")
 def all_current():
-	result = database.selectcurrent(selection=[variables[attr].data for attr in sorted(variables.keys())])[0]
 	keys = sorted(variables.keys())
+	result = database.selectcurrent(selection=[variables[attr].data for attr in keys])[0]
 	values = dict(zip(keys, result))
 	return encode(values)
 
@@ -115,3 +115,47 @@ def export():
     values = [str(col) for col in database.telemetry.c]
     render = flask.render_template("export.csv", database=data, values=values)
     return flask.Response(render, mimetype='text/csv')
+	
+	
+@app.route("/longmulti")
+def longmulti():
+	shown_variables = {value for value in flask.request.args.getlist('data') if value in variables.keys()}
+	variable_data = simplejson.dumps({key : value.serializable() for key, value in variables.iteritems() if key in shown_variables}, sort_keys = True, use_decimal=True)
+	return template("longmulti.html", title="Graph of {data}".format(data=", ".join([variables[shown].display for shown in shown_variables if shown in variables.keys()])), contentclass="fullwidth", variable_data=variable_data, shown_variables=list(enumerate(shown_variables)))
+	
+
+@app.route("/longmulti/data/")
+def longmulti_data():
+	start=flask.request.args.get('start',0)
+	end=flask.request.args.get('end', None)
+	shown_variables = set(flask.request.args.getlist('data'))
+	values = dict()
+	for var in [shown for shown in variables.keys() if shown in shown_variables]: #The array comprehension makes the following function safe by confirming that only valid data params were specified
+		values[var] = database.selectdist(200, selection=[database.telemetry.c.epochtime, variables[var].data], min=start, max=end)
+	return encode(values)
+	
+	
+@app.route("/shortmulti")
+def shortmulti():
+	shown_variables = {value for value in flask.request.args.getlist('data') if value in variables.keys()}
+	variable_data = simplejson.dumps({key : value.serializable() for key, value in variables.iteritems() if key in shown_variables}, sort_keys = True, use_decimal=True)
+	return template("shortmulti.html", title="Graph of {data}".format(data=", ".join([variables[shown].display for shown in shown_variables if shown in variables.keys()])), contentclass="fullwidth", variable_data=variable_data, shown_variables=list(enumerate(shown_variables)))
+	
+
+@app.route("/shortmulti/data/")
+def shortmulti_data():
+	shown_variables = set(flask.request.args.getlist('data'))
+	values = dict()
+	for var in [shown for shown in variables.keys() if shown in shown_variables]: #The array comprehension makes the following function safe by confirming that only valid data params were specified
+		values[var] = database.selectlast(1800, selection=[database.telemetry.c.epochtime, variables[var].data])
+	return encode(values)
+
+
+@app.route("/multivariable/long")
+def multivariable_long():
+	return template("multi_graph.html", title="Select Items for Long Graph", url_of_page=flask.url_for("longmulti"))
+	
+
+@app.route("/multivariable/short")
+def multivariable_short():
+	return template("multi_graph.html", title="Select Items for Short Graph", url_of_page=flask.url_for("shortmulti"))

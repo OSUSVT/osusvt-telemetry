@@ -11,9 +11,8 @@
 function requestData() {
     $.ajax({
         url: '{{ url_for("short_data", data=var) }}',
-        success: function(series) {
-            chart.series[0].setData(series);
-            
+        success: function(ajaxdata) {
+			chart.series[0].setData(ajaxdata);
             // call it again 
             setTimeout(requestData, {{ config["UPDATE"] * 10 }});    
         },
@@ -31,28 +30,37 @@ $(document).ready(function() {
             }
         },
         title: {
-            text: '{{ variables[var].display }}'
+            text: '{{ title }}'
         },
         xAxis: {
             type: 'datetime',
             tickPixelInterval: 150,
             maxZoom: 20 * 1000
         },
-        yAxis: {
-            minPadding: 0.2,
-            maxPadding: 0.2,
-            title: {
-                text: '{{ variables[var].units }}',
-                margin: 80
-            }
-        },
-        series: [{
-            name: '{{ var }}',
-            data: []
-        }]
+        yAxis: [{
+				labels: {
+					format: '{value} {{ variables[var].units }}',
+				},
+				title: {
+					text: '{{ variables[var].display }}',
+				},
+				max: {{ variables[var].max }},
+                min: {{ variables[var].min }}
+            }],
+			series: [{
+				name: '{{ variables[var].display }}',
+                data : [],
+                dataGrouping: {
+                    enabled: false
+                },
+				marker: {
+					enabled: false
+				},
+				tooltip: {
+					valueSuffix: '{{ variables[var].units }}'
+				}
+            }]
     });        
 });
-
-
 </script>
 {% endblock %}

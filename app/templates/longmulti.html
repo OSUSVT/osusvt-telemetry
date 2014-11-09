@@ -7,18 +7,25 @@ $(function () {
     /**
      * Load new data depending on the selected min and max
      */
+	{% autoescape off %}{# If we do not disable this temporarily, then it will make the json we are rendering useless #}
+	variable_data = {{ variable_data }};
+	{% endautoescape %}
+	shown_variables = Object.keys(variable_data);
+	data_url = '{{ url_for('longmulti_data') }}'+'?'+jQuery.param({'data': shown_variables},true)
 	function afterSetExtremes(e) {
 
         var chart = $('#content').highcharts();
 
         chart.showLoading('Loading data from server...');
-        $.getJSON('{{ url_for('long_data', data=var) }}' + '?' + jQuery.param({'start': Math.round(e.min), 'end': Math.round(e.max)},true), function (ajaxdata) {
-				chart.series[0].setData(ajaxdata);
+        $.getJSON(data_url + '&' + jQuery.param({'start': Math.round(e.min), 'end': Math.round(e.max)},true), function (ajaxdata) {
+				{% for index,data in shown_variables %}
+					chart.series[{{ index }}].setData(ajaxdata['{{ data }}']);
+				{% endfor %}
                 chart.hideLoading();
             });
     }
     // See source code from the JSONP handler at https://github.com/highslide-software/highcharts.com/blob/master/samples/data/from-sql.php
-    $.getJSON('{{ url_for('long_data', data=var) }}', function (data) {
+    $.getJSON(data_url, function (data) {
         // create the chart
         $('#content').highcharts('StockChart', {
             chart : {
@@ -28,6 +35,7 @@ $(function () {
 
             navigator : {
 				adaptToUpdatedData: false,
+                enabled: true
             },
 
             scrollbar: {
@@ -35,7 +43,7 @@ $(function () {
             },
 
             title: {
-                text: '{{ variables[var].display }}'
+                text: '{{ title }}'
             },
 
             rangeSelector : {
@@ -62,20 +70,36 @@ $(function () {
                 minRange: 120 * 1000 // one hour
             },
 
-            yAxis: [{
+            yAxis: [
+			{% for index,data in shown_variables %}
+			{
 				labels: {
-					format: '{value} {{ variables[var].units }}'
+					format: '{value} {{ variables[data].units }}',
+					style: {
+						color: Highcharts.getOptions().colors[{{ index }}]
+					}
 				},
 				title: {
-					text: '{{ variables[var].display }}'
+					text: '{{ variables[data].display }}',
+					style: {
+						color: Highcharts.getOptions().colors[{{ index }}]
+					}
 				},
-				opposite: false,
-				max: {{ variables[var].max }},
-                min: {{ variables[var].min }}
-            }],
-            series : [{
-				name: '{{ variables[var].display }}',
-				data : data,
+				opposite: {{ "true" if index%2 else "false" }},
+				max: {{ variables[data].max }},
+                min: {{ variables[data].min }}
+            },
+			{% endfor %}
+			],
+			tooltip: {
+				shared: true
+			},
+            series : [
+			{% for index,data in shown_variables %}
+			{
+				name: '{{ variables[data].display }}',
+				yAxis: {{ index }},
+                data : data['{{ data }}'],
                 dataGrouping: {
                     enabled: false
                 },
@@ -83,11 +107,14 @@ $(function () {
 					enabled: false
 				},
 				tooltip: {
-					valueSuffix: '{{ variables[var].units }}'
+					valueSuffix: '{{ variables[data].units }}'
 				}
-            }]
+            },
+			{% endfor %}
+			]
         });
     });
 });
+
 </script>
 {% endblock %}

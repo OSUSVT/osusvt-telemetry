@@ -5,6 +5,9 @@ div#window {
 div#content {
 	height: 100%;
 }
+div#control {
+	height: 50px;
+}
 div#content.fullwidth {
 	width: 100%;
 }
